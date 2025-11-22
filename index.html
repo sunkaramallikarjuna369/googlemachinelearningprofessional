@@ -658,10 +658,665 @@
             </div>
         </section>
 
-        <!-- Placeholder for remaining domains -->
+        <!-- Domain 2: Architecting ML Solutions -->
         <section id="domain2" class="content-section">
             <h2>🏗️ Domain 2: Architecting ML Solutions (20%)</h2>
-            <p class="coming-soon">Content being developed... This section will cover GCP ML services, architecture patterns, and solution design.</p>
+            
+            <div class="topic">
+                <h3>2.1 Google Cloud ML Services Overview</h3>
+                
+                <div class="concept">
+                    <h4>Vertex AI - Unified ML Platform</h4>
+                    <p><strong>What it is:</strong> Google Cloud's unified platform for building, deploying, and scaling ML models</p>
+                    
+                    <div class="service-features">
+                        <h5>Key Features:</h5>
+                        <ul>
+                            <li><strong>Vertex AI Workbench:</strong> Jupyter notebook environment for development</li>
+                            <li><strong>Vertex AI Training:</strong> Managed training service with custom and pre-built containers</li>
+                            <li><strong>Vertex AI Pipelines:</strong> Orchestrate ML workflows</li>
+                            <li><strong>Vertex AI Prediction:</strong> Deploy models for online and batch predictions</li>
+                            <li><strong>Vertex AI Feature Store:</strong> Centralized repository for ML features</li>
+                            <li><strong>Vertex AI Model Monitoring:</strong> Detect drift and performance issues</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-example">
+                        <h5>Example: Training a Custom Model on Vertex AI</h5>
+                        <pre><code>from google.cloud import aiplatform
+
+# Initialize Vertex AI
+aiplatform.init(project='my-project', location='us-central1')
+
+# Create a custom training job
+job = aiplatform.CustomTrainingJob(
+    display_name='my-training-job',
+    script_path='train.py',
+    container_uri='gcr.io/cloud-aiplatform/training/tf-cpu.2-8:latest',
+    requirements=['pandas', 'scikit-learn'],
+    model_serving_container_image_uri='gcr.io/cloud-aiplatform/prediction/tf2-cpu.2-8:latest'
+)
+
+# Run the training job
+model = job.run(
+    dataset=my_dataset,
+    replica_count=1,
+    machine_type='n1-standard-4',
+    training_fraction_split=0.8,
+    validation_fraction_split=0.1,
+    test_fraction_split=0.1
+)</code></pre>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>BigQuery ML - SQL-Based ML</h4>
+                    <p><strong>What it is:</strong> Create and execute ML models using SQL queries directly in BigQuery</p>
+                    
+                    <div class="service-features">
+                        <h5>When to Use BigQuery ML:</h5>
+                        <ul>
+                            <li>Data is already in BigQuery</li>
+                            <li>Team is familiar with SQL but not Python/ML frameworks</li>
+                            <li>Need quick prototypes and baseline models</li>
+                            <li>Standard ML tasks (classification, regression, clustering, time series)</li>
+                        </ul>
+
+                        <h5>Supported Model Types:</h5>
+                        <ul>
+                            <li>Linear Regression</li>
+                            <li>Logistic Regression</li>
+                            <li>K-means Clustering</li>
+                            <li>Matrix Factorization (recommendations)</li>
+                            <li>Time Series (ARIMA)</li>
+                            <li>Boosted Trees (XGBoost)</li>
+                            <li>Deep Neural Networks (DNN)</li>
+                            <li>AutoML Tables</li>
+                            <li>Imported TensorFlow models</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-example">
+                        <h5>Example: Creating a Classification Model</h5>
+                        <pre><code>-- Create a logistic regression model
+CREATE OR REPLACE MODEL `my_dataset.customer_churn_model`
+OPTIONS(
+  model_type='LOGISTIC_REG',
+  input_label_cols=['churned'],
+  auto_class_weights=TRUE
+) AS
+SELECT
+  customer_age,
+  account_balance,
+  num_transactions,
+  days_since_last_purchase,
+  churned
+FROM
+  `my_dataset.customer_data`
+WHERE
+  data_split = 'TRAIN';
+
+-- Evaluate the model
+SELECT
+  *
+FROM
+  ML.EVALUATE(MODEL `my_dataset.customer_churn_model`,
+    (SELECT * FROM `my_dataset.customer_data` WHERE data_split = 'TEST'));
+
+-- Make predictions
+SELECT
+  customer_id,
+  predicted_churned,
+  predicted_churned_probs
+FROM
+  ML.PREDICT(MODEL `my_dataset.customer_churn_model`,
+    (SELECT * FROM `my_dataset.new_customers`));</code></pre>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>AutoML - No-Code ML</h4>
+                    <p><strong>What it is:</strong> Automated machine learning that handles feature engineering, model selection, and hyperparameter tuning</p>
+                    
+                    <div class="comparison-table">
+                        <h5>AutoML Options:</h5>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>AutoML Type</th>
+                                    <th>Use Case</th>
+                                    <th>Input Format</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>AutoML Tables</td>
+                                    <td>Structured data (classification/regression)</td>
+                                    <td>CSV, BigQuery</td>
+                                </tr>
+                                <tr>
+                                    <td>AutoML Vision</td>
+                                    <td>Image classification, object detection</td>
+                                    <td>Images (JPEG, PNG)</td>
+                                </tr>
+                                <tr>
+                                    <td>AutoML Natural Language</td>
+                                    <td>Text classification, entity extraction, sentiment</td>
+                                    <td>Text documents</td>
+                                </tr>
+                                <tr>
+                                    <td>AutoML Video</td>
+                                    <td>Video classification, object tracking</td>
+                                    <td>Video files</td>
+                                </tr>
+                                <tr>
+                                    <td>AutoML Translation</td>
+                                    <td>Custom translation models</td>
+                                    <td>Parallel text corpora</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="decision-tree">
+                        <h5>When to Use AutoML:</h5>
+                        <ul>
+                            <li>✅ Limited ML expertise on the team</li>
+                            <li>✅ Need quick time-to-market</li>
+                            <li>✅ Standard ML problems (not highly specialized)</li>
+                            <li>✅ Have labeled training data</li>
+                            <li>❌ Need full control over model architecture</li>
+                            <li>❌ Highly specialized domain requiring custom features</li>
+                            <li>❌ Budget constraints (AutoML can be expensive for large datasets)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Pre-trained APIs - Ready-to-Use AI</h4>
+                    <p><strong>What they are:</strong> Google's pre-trained models accessible via API calls - no training required</p>
+                    
+                    <div class="api-grid">
+                        <div class="api-card">
+                            <h5>Vision API</h5>
+                            <ul>
+                                <li>Label detection</li>
+                                <li>Face detection</li>
+                                <li>OCR (text extraction)</li>
+                                <li>Landmark detection</li>
+                                <li>Logo detection</li>
+                                <li>Safe search detection</li>
+                            </ul>
+                        </div>
+
+                        <div class="api-card">
+                            <h5>Natural Language API</h5>
+                            <ul>
+                                <li>Sentiment analysis</li>
+                                <li>Entity recognition</li>
+                                <li>Syntax analysis</li>
+                                <li>Content classification</li>
+                            </ul>
+                        </div>
+
+                        <div class="api-card">
+                            <h5>Translation API</h5>
+                            <ul>
+                                <li>100+ languages</li>
+                                <li>Language detection</li>
+                                <li>Real-time translation</li>
+                            </ul>
+                        </div>
+
+                        <div class="api-card">
+                            <h5>Speech-to-Text API</h5>
+                            <ul>
+                                <li>Audio transcription</li>
+                                <li>120+ languages</li>
+                                <li>Real-time streaming</li>
+                            </ul>
+                        </div>
+
+                        <div class="api-card">
+                            <h5>Text-to-Speech API</h5>
+                            <ul>
+                                <li>Natural-sounding voices</li>
+                                <li>Multiple languages</li>
+                                <li>WaveNet voices</li>
+                            </ul>
+                        </div>
+
+                        <div class="api-card">
+                            <h5>Video Intelligence API</h5>
+                            <ul>
+                                <li>Label detection</li>
+                                <li>Shot change detection</li>
+                                <li>Explicit content detection</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="code-example">
+                        <h5>Example: Using Vision API for Label Detection</h5>
+                        <pre><code>from google.cloud import vision
+
+# Initialize the client
+client = vision.ImageAnnotatorClient()
+
+# Load the image
+with open('image.jpg', 'rb') as image_file:
+    content = image_file.read()
+
+image = vision.Image(content=content)
+
+# Perform label detection
+response = client.label_detection(image=image)
+labels = response.label_annotations
+
+print('Labels:')
+for label in labels:
+    print(f'{label.description}: {label.score:.2f}')</code></pre>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Service Selection Decision Tree</h4>
+                    
+                    <div class="decision-flow">
+                        <div class="decision-box">
+                            <h5>Start: What's your ML problem?</h5>
+                            <ol>
+                                <li><strong>Common task (vision, NLP, speech)?</strong>
+                                    <ul>
+                                        <li>→ Try <strong>Pre-trained APIs</strong> first (fastest, cheapest)</li>
+                                        <li>→ If accuracy insufficient, move to AutoML for custom training</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Data in BigQuery + team knows SQL?</strong>
+                                    <ul>
+                                        <li>→ Use <strong>BigQuery ML</strong> for quick prototypes</li>
+                                        <li>→ Standard ML tasks work great (classification, regression, clustering)</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Limited ML expertise but have labeled data?</strong>
+                                    <ul>
+                                        <li>→ Use <strong>AutoML</strong> for automated model building</li>
+                                        <li>→ Good for standard problems with sufficient data</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Need custom model architecture or specialized features?</strong>
+                                    <ul>
+                                        <li>→ Use <strong>Vertex AI Custom Training</strong></li>
+                                        <li>→ Full control with TensorFlow, PyTorch, scikit-learn</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Complex ML pipeline with multiple steps?</strong>
+                                    <ul>
+                                        <li>→ Use <strong>Vertex AI Pipelines</strong> to orchestrate</li>
+                                        <li>→ Combine multiple services in a workflow</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>2.2 Data Storage and Processing Services</h3>
+                
+                <div class="concept">
+                    <h4>Storage Options for ML</h4>
+                    
+                    <div class="comparison-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Best For</th>
+                                    <th>Data Type</th>
+                                    <th>Use Case</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Cloud Storage</strong></td>
+                                    <td>Unstructured data</td>
+                                    <td>Images, videos, audio, text files</td>
+                                    <td>Training data, model artifacts, logs</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>BigQuery</strong></td>
+                                    <td>Structured data analytics</td>
+                                    <td>Tabular data, logs, events</td>
+                                    <td>Feature engineering, SQL-based ML</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cloud SQL</strong></td>
+                                    <td>Transactional data</td>
+                                    <td>Relational data (MySQL, PostgreSQL)</td>
+                                    <td>Application database, small datasets</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Bigtable</strong></td>
+                                    <td>High-throughput NoSQL</td>
+                                    <td>Time-series, IoT data</td>
+                                    <td>Real-time feature serving, large-scale data</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Firestore</strong></td>
+                                    <td>Document database</td>
+                                    <td>JSON documents</td>
+                                    <td>Mobile/web app data, user profiles</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Data Processing Services</h4>
+                    
+                    <div class="service-comparison">
+                        <div class="service-card">
+                            <h5>Dataflow (Apache Beam)</h5>
+                            <p><strong>Use for:</strong> Stream and batch data processing</p>
+                            <ul>
+                                <li>Unified programming model (same code for batch and streaming)</li>
+                                <li>Auto-scaling and serverless</li>
+                                <li>Built-in transformations for ML preprocessing</li>
+                                <li>Integration with TensorFlow Transform (TFT)</li>
+                            </ul>
+                            <p><strong>Example use case:</strong> Real-time feature engineering for online predictions</p>
+                        </div>
+
+                        <div class="service-card">
+                            <h5>Dataproc (Apache Spark/Hadoop)</h5>
+                            <p><strong>Use for:</strong> Big data processing with Spark/Hadoop ecosystem</p>
+                            <ul>
+                                <li>Managed Spark and Hadoop clusters</li>
+                                <li>Fast cluster creation (90 seconds)</li>
+                                <li>Integration with Spark MLlib</li>
+                                <li>Good for existing Spark workloads</li>
+                            </ul>
+                            <p><strong>Example use case:</strong> Large-scale feature extraction from historical data</p>
+                        </div>
+
+                        <div class="service-card">
+                            <h5>Data Fusion</h5>
+                            <p><strong>Use for:</strong> Visual ETL pipeline building</p>
+                            <ul>
+                                <li>No-code/low-code data integration</li>
+                                <li>Pre-built connectors for many sources</li>
+                                <li>Visual pipeline designer</li>
+                                <li>Built on Apache CDAP</li>
+                            </ul>
+                            <p><strong>Example use case:</strong> Connecting multiple data sources for ML training</p>
+                        </div>
+
+                        <div class="service-card">
+                            <h5>Pub/Sub</h5>
+                            <p><strong>Use for:</strong> Real-time message streaming</p>
+                            <ul>
+                                <li>Asynchronous messaging</li>
+                                <li>At-least-once delivery</li>
+                                <li>Global scale</li>
+                                <li>Integration with Dataflow for stream processing</li>
+                            </ul>
+                            <p><strong>Example use case:</strong> Ingesting real-time events for streaming ML predictions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>2.3 ML Architecture Patterns</h3>
+                
+                <div class="concept">
+                    <h4>Batch Prediction Architecture</h4>
+                    <p><strong>When to use:</strong> Predictions don't need to be real-time, can be pre-computed</p>
+                    
+                    <div class="architecture-diagram">
+                        <h5>Typical Flow:</h5>
+                        <ol>
+                            <li>Data stored in BigQuery or Cloud Storage</li>
+                            <li>Scheduled job (Cloud Scheduler) triggers batch prediction</li>
+                            <li>Vertex AI Batch Prediction processes all records</li>
+                            <li>Results written back to BigQuery or Cloud Storage</li>
+                            <li>Application reads pre-computed predictions</li>
+                        </ol>
+                    </div>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h6>Advantages:</h6>
+                            <ul>
+                                <li>Cost-effective (process in bulk)</li>
+                                <li>Can use larger, more complex models</li>
+                                <li>Easier to optimize throughput</li>
+                                <li>No latency requirements</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h6>Disadvantages:</h6>
+                            <ul>
+                                <li>Predictions may be stale</li>
+                                <li>Can't handle new data immediately</li>
+                                <li>Requires storage for all predictions</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="example">
+                        <h5>Example Use Cases:</h5>
+                        <ul>
+                            <li>Daily customer churn predictions</li>
+                            <li>Weekly product recommendations</li>
+                            <li>Monthly credit risk scoring</li>
+                            <li>Nightly image classification for catalog</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Online Prediction Architecture</h4>
+                    <p><strong>When to use:</strong> Need real-time predictions with low latency</p>
+                    
+                    <div class="architecture-diagram">
+                        <h5>Typical Flow:</h5>
+                        <ol>
+                            <li>User request comes to application</li>
+                            <li>Application calls Vertex AI Prediction endpoint</li>
+                            <li>Model returns prediction in real-time (< 1 second)</li>
+                            <li>Application uses prediction in response</li>
+                        </ol>
+                    </div>
+
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h6>Advantages:</h6>
+                            <ul>
+                                <li>Always up-to-date predictions</li>
+                                <li>Can use latest user context</li>
+                                <li>No need to store predictions</li>
+                                <li>Handles new data immediately</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h6>Disadvantages:</h6>
+                            <ul>
+                                <li>Higher cost per prediction</li>
+                                <li>Latency requirements limit model complexity</li>
+                                <li>Need to handle traffic spikes</li>
+                                <li>Requires always-on infrastructure</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="example">
+                        <h5>Example Use Cases:</h5>
+                        <ul>
+                            <li>Fraud detection during transaction</li>
+                            <li>Real-time product recommendations</li>
+                            <li>Content moderation</li>
+                            <li>Chatbot responses</li>
+                        </ul>
+                    </div>
+
+                    <div class="best-practices">
+                        <h5>Best Practices for Online Predictions:</h5>
+                        <ul>
+                            <li><strong>Use model caching:</strong> Cache frequently used features</li>
+                            <li><strong>Optimize model size:</strong> Smaller models = lower latency</li>
+                            <li><strong>Set up autoscaling:</strong> Handle traffic variations</li>
+                            <li><strong>Monitor latency:</strong> Set SLAs and alerts</li>
+                            <li><strong>Use prediction batching:</strong> Group multiple predictions when possible</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Streaming ML Architecture</h4>
+                    <p><strong>When to use:</strong> Process continuous data streams with ML</p>
+                    
+                    <div class="architecture-diagram">
+                        <h5>Typical Flow:</h5>
+                        <ol>
+                            <li>Events published to Pub/Sub</li>
+                            <li>Dataflow processes stream with feature engineering</li>
+                            <li>Enriched features sent to ML model</li>
+                            <li>Predictions written to downstream systems (BigQuery, Bigtable, Pub/Sub)</li>
+                            <li>Real-time dashboards or alerts triggered</li>
+                        </ol>
+                    </div>
+
+                    <div class="example">
+                        <h5>Example Use Cases:</h5>
+                        <ul>
+                            <li>IoT sensor anomaly detection</li>
+                            <li>Real-time clickstream analysis</li>
+                            <li>Live video content moderation</li>
+                            <li>Financial market predictions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Hybrid Architecture (Batch + Online)</h4>
+                    <p><strong>When to use:</strong> Combine benefits of both approaches</p>
+                    
+                    <div class="architecture-diagram">
+                        <h5>Common Pattern:</h5>
+                        <ol>
+                            <li><strong>Batch component:</strong> Pre-compute expensive features or embeddings</li>
+                            <li><strong>Store in Bigtable/Redis:</strong> Fast feature lookup</li>
+                            <li><strong>Online component:</strong> Combine pre-computed features with real-time context</li>
+                            <li><strong>Make prediction:</strong> Fast inference with enriched features</li>
+                        </ol>
+                    </div>
+
+                    <div class="example">
+                        <h5>Example: Recommendation System</h5>
+                        <ul>
+                            <li><strong>Batch:</strong> Compute user embeddings and item similarities daily</li>
+                            <li><strong>Store:</strong> Save embeddings in Bigtable for fast lookup</li>
+                            <li><strong>Online:</strong> Fetch user embedding + current context (time, location)</li>
+                            <li><strong>Predict:</strong> Generate personalized recommendations in real-time</li>
+                        </ul>
+                        <p><strong>Benefit:</strong> Low latency (no need to compute embeddings in real-time) + fresh context</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>2.4 Practice Questions</h3>
+                
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 1:</h4>
+                        <p>Your company has 10TB of customer transaction data in BigQuery. Your data science team is proficient in SQL but has limited Python experience. You need to build a customer churn prediction model quickly. What's the best approach?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: BigQuery ML</h5>
+                        <p><strong>Reasoning:</strong></p>
+                        <ul>
+                            <li>Data already in BigQuery (no data movement needed)</li>
+                            <li>Team knows SQL (leverage existing skills)</li>
+                            <li>Need quick results (BigQuery ML is fastest for prototyping)</li>
+                            <li>Standard ML task (classification)</li>
+                        </ul>
+                        <p><strong>Implementation:</strong></p>
+                        <pre><code>CREATE OR REPLACE MODEL `dataset.churn_model`
+OPTIONS(model_type='LOGISTIC_REG', input_label_cols=['churned'])
+AS SELECT * FROM `dataset.customer_features`;</code></pre>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 2:</h4>
+                        <p>You need to classify images of products into 500 categories. You have 100,000 labeled images. Your team has ML expertise but limited time. What service should you use?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: AutoML Vision</h5>
+                        <p><strong>Reasoning:</strong></p>
+                        <ul>
+                            <li>Image classification task</li>
+                            <li>Have labeled data (100K images is good for AutoML)</li>
+                            <li>Limited time (AutoML handles feature engineering and architecture search)</li>
+                            <li>500 categories is within AutoML capabilities</li>
+                        </ul>
+                        <p><strong>Why not Pre-trained Vision API?</strong> Pre-trained API has generic labels, not your specific 500 product categories</p>
+                        <p><strong>Why not Custom Training?</strong> Would work but takes more time to build, train, and tune</p>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 3:</h4>
+                        <p>You need to make 1 million predictions per day for a recommendation system. Predictions can be up to 24 hours old. What architecture should you use?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Batch Prediction Architecture</h5>
+                        <p><strong>Reasoning:</strong></p>
+                        <ul>
+                            <li>Predictions can be stale (up to 24 hours old is acceptable)</li>
+                            <li>High volume (1M predictions) - batch is more cost-effective</li>
+                            <li>Can pre-compute all recommendations daily</li>
+                        </ul>
+                        <p><strong>Architecture:</strong></p>
+                        <ol>
+                            <li>Cloud Scheduler triggers daily job</li>
+                            <li>Vertex AI Batch Prediction processes all users</li>
+                            <li>Results stored in BigQuery or Bigtable</li>
+                            <li>Application reads pre-computed recommendations</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 4:</h4>
+                        <p>You're building a fraud detection system that must make predictions within 100ms during payment processing. What architecture should you use?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Online Prediction with Hybrid Features</h5>
+                        <p><strong>Reasoning:</strong></p>
+                        <ul>
+                            <li>Real-time requirement (100ms latency)</li>
+                            <li>Need latest transaction context</li>
+                            <li>Can't pre-compute (don't know future transactions)</li>
+                        </ul>
+                        <p><strong>Optimized Architecture:</strong></p>
+                        <ol>
+                            <li><strong>Batch:</strong> Pre-compute user risk profiles daily → store in Bigtable</li>
+                            <li><strong>Online:</strong> Fetch user profile + current transaction features</li>
+                            <li><strong>Predict:</strong> Lightweight model for fast inference (< 100ms)</li>
+                            <li><strong>Optimize:</strong> Use model caching, small model size, autoscaling</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="domain3" class="content-section">
