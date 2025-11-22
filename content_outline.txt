@@ -1,0 +1,175 @@
+
+COMPREHENSIVE CONTENT PLAN FOR DOMAINS 2-7
+
+DOMAIN 2: ARCHITECTING ML SOLUTIONS (20%)
+===========================================
+2.1 Google Cloud ML Services Overview
+    - Vertex AI (unified ML platform)
+    - BigQuery ML (SQL-based ML)
+    - AutoML (no-code ML)
+    - Pre-trained APIs (Vision, NLP, Speech, Translation)
+    - AI Platform (legacy, transitioning to Vertex AI)
+    
+2.2 Choosing the Right Service
+    - Decision tree for service selection
+    - When to use AutoML vs Custom Training
+    - When to use BigQuery ML
+    - When to use Pre-trained APIs
+    
+2.3 Data Storage Solutions
+    - Cloud Storage (object storage)
+    - BigQuery (data warehouse)
+    - Cloud SQL (relational database)
+    - Bigtable (NoSQL, low-latency)
+    - Firestore (document database)
+    
+2.4 Data Processing Services
+    - Dataflow (stream & batch processing)
+    - Dataproc (Hadoop/Spark)
+    - Data Fusion (visual ETL)
+    - Pub/Sub (messaging)
+    
+2.5 Architecture Patterns
+    - Batch prediction architecture
+    - Real-time prediction architecture
+    - Streaming ML architecture
+    - Hybrid architectures
+
+DOMAIN 3: DATA PREPARATION & PROCESSING (15%)
+==============================================
+3.1 Data Ingestion
+    - Batch ingestion (Cloud Storage, BigQuery Load)
+    - Streaming ingestion (Pub/Sub, Dataflow)
+    - Database connectors
+    
+3.2 Data Preprocessing
+    - Handling missing values
+    - Outlier detection and treatment
+    - Data normalization/standardization
+    - Encoding categorical variables
+    
+3.3 Feature Engineering
+    - Creating new features
+    - Feature crosses
+    - Binning/bucketing
+    - Text feature extraction
+    - Image feature extraction
+    
+3.4 Data Validation
+    - TensorFlow Data Validation (TFDV)
+    - Schema validation
+    - Anomaly detection in data
+    - Data quality checks
+    
+3.5 Data Splitting
+    - Train/validation/test splits
+    - Cross-validation strategies
+    - Time-based splits for time series
+    - Stratified sampling
+
+DOMAIN 4: MODEL DEVELOPMENT (20%)
+==================================
+4.1 Algorithm Selection
+    - Linear models (regression, logistic regression)
+    - Tree-based models (Random Forest, XGBoost, LightGBM)
+    - Neural networks (DNNs, CNNs, RNNs, Transformers)
+    - Ensemble methods
+    
+4.2 Training Approaches
+    - Custom training with Vertex AI
+    - AutoML training
+    - BigQuery ML training
+    - Distributed training
+    - Transfer learning
+    
+4.3 Hyperparameter Tuning
+    - Grid search
+    - Random search
+    - Bayesian optimization
+    - Vertex AI Hyperparameter Tuning
+    
+4.4 Model Evaluation
+    - Evaluation metrics (covered in Domain 1)
+    - Cross-validation
+    - Learning curves
+    - Confusion matrix analysis
+    
+4.5 Handling Common Issues
+    - Overfitting (regularization, dropout, early stopping)
+    - Underfitting (increase model complexity)
+    - Class imbalance (SMOTE, class weights)
+    - Training instability
+
+DOMAIN 5: ML PIPELINE AUTOMATION (10%)
+=======================================
+5.1 Vertex AI Pipelines
+    - Pipeline components
+    - Pipeline orchestration
+    - Kubeflow Pipelines SDK
+    
+5.2 Kubeflow Pipelines
+    - Pipeline definition
+    - Component creation
+    - Pipeline execution
+    
+5.3 MLOps Practices
+    - Version control for ML
+    - Experiment tracking
+    - Model registry
+    - CI/CD for ML
+    
+5.4 Workflow Orchestration
+    - Cloud Composer (Apache Airflow)
+    - Cloud Scheduler
+    - Workflow automation
+
+DOMAIN 6: MODEL DEPLOYMENT & SERVING (10%)
+===========================================
+6.1 Deployment Options
+    - Vertex AI Endpoints (online prediction)
+    - Batch prediction jobs
+    - BigQuery ML prediction
+    - Custom serving containers
+    
+6.2 Serving Patterns
+    - Synchronous prediction
+    - Asynchronous prediction
+    - Batch prediction
+    - Streaming prediction
+    
+6.3 Model Versioning
+    - A/B testing
+    - Canary deployments
+    - Blue-green deployments
+    - Traffic splitting
+    
+6.4 Scaling and Performance
+    - Auto-scaling
+    - Load balancing
+    - Latency optimization
+    - Cost optimization
+
+DOMAIN 7: ML SOLUTION MONITORING (10%)
+=======================================
+7.1 Model Monitoring
+    - Vertex AI Model Monitoring
+    - Prediction drift detection
+    - Training-serving skew
+    - Feature attribution drift
+    
+7.2 Performance Monitoring
+    - Prediction latency
+    - Throughput metrics
+    - Error rates
+    - Resource utilization
+    
+7.3 Data Drift Detection
+    - Statistical tests
+    - Distribution comparison
+    - Alert configuration
+    
+7.4 Retraining Strategies
+    - Scheduled retraining
+    - Triggered retraining
+    - Continuous training
+    - Model refresh policies

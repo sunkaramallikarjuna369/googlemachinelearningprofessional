@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Professional Machine Learning Engineer - Complete Study Guide</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎓 Google Professional Machine Learning Engineer</h1>
+            <p class="subtitle">Complete Certification Study Guide for Beginners</p>
+            <div class="exam-info">
+                <span class="badge">338 Practice Questions</span>
+                <span class="badge">7 Exam Domains</span>
+                <span class="badge">Official Google Resources</span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <div class="container">
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#domain1">Framing ML Problems</a></li>
+                <li><a href="#domain2">Architecting Solutions</a></li>
+                <li><a href="#domain3">Data Preparation</a></li>
+                <li><a href="#domain4">Model Development</a></li>
+                <li><a href="#domain5">ML Pipelines</a></li>
+                <li><a href="#domain6">Deployment</a></li>
+                <li><a href="#domain7">Monitoring</a></li>
+                <li><a href="#resources">Resources</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Overview Section -->
+        <section id="overview" class="content-section">
+            <h2>📋 Certification Overview</h2>
+            
+            <div class="info-card">
+                <h3>About the Exam</h3>
+                <p>The Google Professional Machine Learning Engineer certification validates your ability to design, build, and productionize ML models to solve business challenges using Google Cloud technologies and knowledge of proven ML models and techniques.</p>
+                
+                <div class="exam-details">
+                    <div class="detail-item">
+                        <strong>Duration:</strong> 2 hours
+                    </div>
+                    <div class="detail-item">
+                        <strong>Format:</strong> Multiple choice and multiple select
+                    </div>
+                    <div class="detail-item">
+                        <strong>Cost:</strong> $200 USD
+                    </div>
+                    <div class="detail-item">
+                        <strong>Language:</strong> English, Japanese
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3>Who Should Take This Exam?</h3>
+                <ul class="checklist">
+                    <li>ML Engineers who want to validate their skills</li>
+                    <li>Data Scientists transitioning to ML Engineering</li>
+                    <li>Software Engineers moving into ML/AI</li>
+                    <li>Anyone building production ML systems on Google Cloud</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3>Prerequisites</h3>
+                <ul class="checklist">
+                    <li>3+ years of industry experience (recommended)</li>
+                    <li>1+ years designing and managing solutions using Google Cloud</li>
+                    <li>Understanding of ML fundamentals and algorithms</li>
+                    <li>Experience with Python and ML frameworks (TensorFlow, scikit-learn, PyTorch)</li>
+                    <li>Familiarity with data engineering concepts</li>
+                </ul>
+            </div>
+
+            <div class="info-card highlight">
+                <h3>🎯 Exam Domains & Weightage</h3>
+                <div class="domain-list">
+                    <div class="domain-item">
+                        <div class="domain-header">
+                            <span class="domain-number">1</span>
+                            <span class="domain-title">Framing ML Problems</span>
+                            <span class="domain-weight">~15%</span>
+                        </div>
+                        <p>Translate business objectives into ML problems, define success metrics</p>
+                    </div>
+                    
+                    <div class="domain-item">
+                        <div class="domain-header">
+                            <span class="domain-number">2</span>
+                            <span class="domain-title">Architecting ML Solutions</span>
+                            <span class="domain-weight">~20%</span>
+                        </div>
+                        <p>Design ML solutions using appropriate GCP services and architecture patterns</p>
+                    </div>
+                    
+                    <div class="domain-item">
+                        <div class="domain-header">
+                            <span class="domain-number">3</span>
+                            <span class="domain-title">Data Preparation & Processing</span>
+                            <span class="domain-weight">~15%</span>
+                        </div>
+                        <p>Ingest, preprocess, and engineer features from various data sources</p>
+                    </div>
+                    
+                    <div class="domain-item">
+                        <div class="domain-header">
+                            <span class="domain-number">4</span>
+                            <span class="domain-title">Model Development</span>
+                            <span class="domain-weight">~20%</span>
+                        </div>
+                        <p>Build, train, and evaluate ML models using various techniques</p>
+                    </div>
+                    
+                    <div class="domain-item">
+                        <div class="domain-header">
+                            <span class="domain-number">5</span>
+                            <span class="domain-title">ML Pipeline Automation</span>
+                            <span class="domain-weight">~10%</span>
+                        </div>
+                        <p>Automate and orchestrate ML workflows using pipelines</p>
+                    </div>
+                    
+                    <div class="domain-item">
+                        <div class="domain-header">
+                            <span class="domain-number">6</span>
+                            <span class="domain-title">Model Deployment & Serving</span>
+                            <span class="domain-weight">~10%</span>
+                        </div>
+                        <p>Deploy models for batch and online predictions with proper scaling</p>
+                    </div>
+                    
+                    <div class="domain-item">
+                        <div class="domain-header">
+                            <span class="domain-number">7</span>
+                            <span class="domain-title">ML Solution Monitoring</span>
+                            <span class="domain-weight">~10%</span>
+                        </div>
+                        <p>Monitor model performance, detect drift, and trigger retraining</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card success">
+                <h3>✅ How to Use This Study Guide</h3>
+                <ol>
+                    <li><strong>Start with fundamentals:</strong> If you're a beginner, read each domain sequentially</li>
+                    <li><strong>Practice hands-on:</strong> Try the code examples in Google Cloud Console</li>
+                    <li><strong>Take notes:</strong> Write down key concepts and services for each domain</li>
+                    <li><strong>Review practice questions:</strong> Test your understanding after each section</li>
+                    <li><strong>Use official resources:</strong> Follow the Google Cloud documentation links provided</li>
+                    <li><strong>Build projects:</strong> Apply concepts to real-world scenarios</li>
+                    <li><strong>Join study groups:</strong> Discuss concepts with other learners</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Domain 1: Framing ML Problems -->
+        <section id="domain1" class="content-section">
+            <h2>🎯 Domain 1: Framing ML Problems (15%)</h2>
+            
+            <div class="learning-objectives">
+                <h3>Learning Objectives</h3>
+                <ul>
+                    <li>Translate business challenges into ML use cases</li>
+                    <li>Define appropriate success metrics for ML problems</li>
+                    <li>Identify when ML is and isn't the right solution</li>
+                    <li>Determine data requirements and availability</li>
+                    <li>Choose between different ML approaches (supervised, unsupervised, reinforcement learning)</li>
+                </ul>
+            </div>
+
+            <div class="topic">
+                <h3>1.1 Translating Business Problems to ML Problems</h3>
+                
+                <div class="concept">
+                    <h4>Understanding the Business Context</h4>
+                    <p>Before jumping into ML, you need to understand the business problem deeply:</p>
+                    
+                    <div class="example">
+                        <h5>Example: E-commerce Product Recommendations</h5>
+                        <p><strong>Business Problem:</strong> "We want to increase sales by showing customers products they're likely to buy."</p>
+                        
+                        <p><strong>ML Translation:</strong></p>
+                        <ul>
+                            <li><strong>Problem Type:</strong> Recommendation system (supervised learning)</li>
+                            <li><strong>Input:</strong> User browsing history, purchase history, product features, user demographics</li>
+                            <li><strong>Output:</strong> Ranked list of product recommendations</li>
+                            <li><strong>Success Metric:</strong> Click-through rate (CTR), conversion rate, revenue per user</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>When to Use ML vs Traditional Programming</h4>
+                    
+                    <div class="comparison-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Use ML When...</th>
+                                    <th>Use Traditional Programming When...</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Rules are complex and hard to code</td>
+                                    <td>Rules are simple and well-defined</td>
+                                </tr>
+                                <tr>
+                                    <td>Patterns exist in data</td>
+                                    <td>No historical data available</td>
+                                </tr>
+                                <tr>
+                                    <td>Problem requires adaptation over time</td>
+                                    <td>Problem is static and unchanging</td>
+                                </tr>
+                                <tr>
+                                    <td>Scale is large (millions of examples)</td>
+                                    <td>Scale is small (hundreds of examples)</td>
+                                </tr>
+                                <tr>
+                                    <td>Human expertise is hard to codify</td>
+                                    <td>Expert rules can be easily written</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Common ML Problem Types</h4>
+                    
+                    <div class="problem-types">
+                        <div class="problem-type-card">
+                            <h5>🏷️ Classification</h5>
+                            <p><strong>Goal:</strong> Predict a category or class</p>
+                            <p><strong>Examples:</strong></p>
+                            <ul>
+                                <li>Email spam detection (spam/not spam)</li>
+                                <li>Image classification (cat/dog/bird)</li>
+                                <li>Sentiment analysis (positive/negative/neutral)</li>
+                                <li>Fraud detection (fraudulent/legitimate)</li>
+                            </ul>
+                            <p><strong>GCP Services:</strong> Vertex AI AutoML, BigQuery ML, Custom Training</p>
+                        </div>
+
+                        <div class="problem-type-card">
+                            <h5>📊 Regression</h5>
+                            <p><strong>Goal:</strong> Predict a continuous numerical value</p>
+                            <p><strong>Examples:</strong></p>
+                            <ul>
+                                <li>House price prediction</li>
+                                <li>Sales forecasting</li>
+                                <li>Temperature prediction</li>
+                                <li>Customer lifetime value</li>
+                            </ul>
+                            <p><strong>GCP Services:</strong> BigQuery ML, Vertex AI, AutoML Tables</p>
+                        </div>
+
+                        <div class="problem-type-card">
+                            <h5>🎯 Clustering</h5>
+                            <p><strong>Goal:</strong> Group similar items together</p>
+                            <p><strong>Examples:</strong></p>
+                            <ul>
+                                <li>Customer segmentation</li>
+                                <li>Anomaly detection</li>
+                                <li>Document categorization</li>
+                                <li>Image segmentation</li>
+                            </ul>
+                            <p><strong>GCP Services:</strong> BigQuery ML (K-means), Vertex AI</p>
+                        </div>
+
+                        <div class="problem-type-card">
+                            <h5>🎮 Reinforcement Learning</h5>
+                            <p><strong>Goal:</strong> Learn optimal actions through trial and error</p>
+                            <p><strong>Examples:</strong></p>
+                            <ul>
+                                <li>Game playing (AlphaGo)</li>
+                                <li>Robotics control</li>
+                                <li>Resource optimization</li>
+                                <li>Recommendation systems</li>
+                            </ul>
+                            <p><strong>GCP Services:</strong> Vertex AI Custom Training with TensorFlow Agents</p>
+                        </div>
+
+                        <div class="problem-type-card">
+                            <h5>💬 Natural Language Processing</h5>
+                            <p><strong>Goal:</strong> Understand and generate human language</p>
+                            <p><strong>Examples:</strong></p>
+                            <ul>
+                                <li>Text classification</li>
+                                <li>Named entity recognition</li>
+                                <li>Machine translation</li>
+                                <li>Question answering</li>
+                            </ul>
+                            <p><strong>GCP Services:</strong> Natural Language API, AutoML Natural Language, Vertex AI</p>
+                        </div>
+
+                        <div class="problem-type-card">
+                            <h5>👁️ Computer Vision</h5>
+                            <p><strong>Goal:</strong> Understand and analyze visual information</p>
+                            <p><strong>Examples:</strong></p>
+                            <ul>
+                                <li>Image classification</li>
+                                <li>Object detection</li>
+                                <li>Face recognition</li>
+                                <li>Optical character recognition (OCR)</li>
+                            </ul>
+                            <p><strong>GCP Services:</strong> Vision API, AutoML Vision, Vertex AI</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>1.2 Defining Success Metrics</h3>
+                
+                <div class="concept">
+                    <h4>Why Metrics Matter</h4>
+                    <p>Success metrics help you:</p>
+                    <ul>
+                        <li>Measure if your ML solution is working</li>
+                        <li>Compare different models objectively</li>
+                        <li>Communicate results to stakeholders</li>
+                        <li>Decide when to retrain or update models</li>
+                    </ul>
+                </div>
+
+                <div class="concept">
+                    <h4>Classification Metrics</h4>
+                    
+                    <div class="metric-explanation">
+                        <h5>Confusion Matrix</h5>
+                        <p>The foundation for understanding classification performance:</p>
+                        
+                        <div class="confusion-matrix">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" rowspan="2"></th>
+                                        <th colspan="2">Predicted</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Positive</th>
+                                        <th>Negative</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th rowspan="2">Actual</th>
+                                        <th>Positive</th>
+                                        <td class="tp">True Positive (TP)</td>
+                                        <td class="fn">False Negative (FN)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Negative</th>
+                                        <td class="fp">False Positive (FP)</td>
+                                        <td class="tn">True Negative (TN)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="metric-formulas">
+                            <div class="formula-card">
+                                <h6>Accuracy</h6>
+                                <p class="formula">Accuracy = (TP + TN) / (TP + TN + FP + FN)</p>
+                                <p><strong>When to use:</strong> Balanced datasets where all classes are equally important</p>
+                                <p><strong>Caution:</strong> Misleading with imbalanced data (e.g., 99% negative class)</p>
+                            </div>
+
+                            <div class="formula-card">
+                                <h6>Precision</h6>
+                                <p class="formula">Precision = TP / (TP + FP)</p>
+                                <p><strong>Meaning:</strong> Of all positive predictions, how many were actually positive?</p>
+                                <p><strong>When to use:</strong> When false positives are costly (e.g., spam filter - don't want to mark important emails as spam)</p>
+                            </div>
+
+                            <div class="formula-card">
+                                <h6>Recall (Sensitivity)</h6>
+                                <p class="formula">Recall = TP / (TP + FN)</p>
+                                <p><strong>Meaning:</strong> Of all actual positives, how many did we correctly identify?</p>
+                                <p><strong>When to use:</strong> When false negatives are costly (e.g., disease detection - don't want to miss sick patients)</p>
+                            </div>
+
+                            <div class="formula-card">
+                                <h6>F1 Score</h6>
+                                <p class="formula">F1 = 2 × (Precision × Recall) / (Precision + Recall)</p>
+                                <p><strong>Meaning:</strong> Harmonic mean of precision and recall</p>
+                                <p><strong>When to use:</strong> When you need a balance between precision and recall</p>
+                            </div>
+
+                            <div class="formula-card">
+                                <h6>AUC-ROC</h6>
+                                <p><strong>Meaning:</strong> Area Under the Receiver Operating Characteristic Curve</p>
+                                <p><strong>Range:</strong> 0.5 (random) to 1.0 (perfect)</p>
+                                <p><strong>When to use:</strong> Comparing models across different thresholds, imbalanced datasets</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="example">
+                        <h5>Example: Fraud Detection</h5>
+                        <p><strong>Scenario:</strong> Bank wants to detect fraudulent transactions</p>
+                        <p><strong>Dataset:</strong> 1% fraudulent, 99% legitimate transactions</p>
+                        
+                        <p><strong>Why accuracy is misleading:</strong></p>
+                        <p>A model that predicts "legitimate" for everything would have 99% accuracy but catch zero fraud!</p>
+                        
+                        <p><strong>Better metrics:</strong></p>
+                        <ul>
+                            <li><strong>Recall:</strong> We want to catch as many fraudulent transactions as possible (minimize false negatives)</li>
+                            <li><strong>Precision:</strong> But we also don't want to block too many legitimate transactions (minimize false positives)</li>
+                            <li><strong>F1 Score:</strong> Balance between catching fraud and not annoying customers</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Regression Metrics</h4>
+                    
+                    <div class="metric-formulas">
+                        <div class="formula-card">
+                            <h6>Mean Absolute Error (MAE)</h6>
+                            <p class="formula">MAE = (1/n) × Σ|actual - predicted|</p>
+                            <p><strong>Meaning:</strong> Average absolute difference between predictions and actual values</p>
+                            <p><strong>Pros:</strong> Easy to interpret, same units as target variable</p>
+                            <p><strong>Cons:</strong> Doesn't penalize large errors more than small ones</p>
+                        </div>
+
+                        <div class="formula-card">
+                            <h6>Mean Squared Error (MSE)</h6>
+                            <p class="formula">MSE = (1/n) × Σ(actual - predicted)²</p>
+                            <p><strong>Meaning:</strong> Average squared difference between predictions and actual values</p>
+                            <p><strong>Pros:</strong> Penalizes large errors more heavily</p>
+                            <p><strong>Cons:</strong> Units are squared, harder to interpret</p>
+                        </div>
+
+                        <div class="formula-card">
+                            <h6>Root Mean Squared Error (RMSE)</h6>
+                            <p class="formula">RMSE = √MSE</p>
+                            <p><strong>Meaning:</strong> Square root of MSE</p>
+                            <p><strong>Pros:</strong> Same units as target variable, penalizes large errors</p>
+                            <p><strong>Most common:</strong> Used in many ML competitions and real-world applications</p>
+                        </div>
+
+                        <div class="formula-card">
+                            <h6>R² (R-squared)</h6>
+                            <p class="formula">R² = 1 - (SS_res / SS_tot)</p>
+                            <p><strong>Meaning:</strong> Proportion of variance explained by the model</p>
+                            <p><strong>Range:</strong> 0 to 1 (higher is better)</p>
+                            <p><strong>Interpretation:</strong> R² = 0.85 means model explains 85% of variance in data</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Business Metrics vs ML Metrics</h4>
+                    
+                    <div class="comparison-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Business Metric</th>
+                                    <th>ML Metric</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Revenue increase</td>
+                                    <td>Click-through rate (CTR)</td>
+                                    <td>Recommendation system</td>
+                                </tr>
+                                <tr>
+                                    <td>Customer satisfaction</td>
+                                    <td>Precision, Recall</td>
+                                    <td>Search results quality</td>
+                                </tr>
+                                <tr>
+                                    <td>Cost reduction</td>
+                                    <td>False positive rate</td>
+                                    <td>Fraud detection</td>
+                                </tr>
+                                <tr>
+                                    <td>User engagement</td>
+                                    <td>AUC-ROC</td>
+                                    <td>Content personalization</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p><strong>Key Insight:</strong> Always connect ML metrics to business outcomes. A model with 95% accuracy might not be useful if it doesn't improve the business metric that matters.</p>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>1.3 Data Requirements and Availability</h3>
+                
+                <div class="concept">
+                    <h4>How Much Data Do You Need?</h4>
+                    
+                    <div class="data-requirements">
+                        <div class="requirement-card">
+                            <h5>Simple Linear Models</h5>
+                            <p><strong>Amount:</strong> Hundreds to thousands of examples</p>
+                            <p><strong>Example:</strong> Linear regression, logistic regression</p>
+                            <p><strong>Rule of thumb:</strong> 10× examples per feature</p>
+                        </div>
+
+                        <div class="requirement-card">
+                            <h5>Tree-Based Models</h5>
+                            <p><strong>Amount:</strong> Thousands to tens of thousands</p>
+                            <p><strong>Example:</strong> Random Forest, Gradient Boosting</p>
+                            <p><strong>Rule of thumb:</strong> More data = better, but diminishing returns</p>
+                        </div>
+
+                        <div class="requirement-card">
+                            <h5>Deep Learning</h5>
+                            <p><strong>Amount:</strong> Tens of thousands to millions</p>
+                            <p><strong>Example:</strong> Neural networks, CNNs, RNNs</p>
+                            <p><strong>Rule of thumb:</strong> More parameters = more data needed</p>
+                        </div>
+
+                        <div class="requirement-card">
+                            <h5>Transfer Learning</h5>
+                            <p><strong>Amount:</strong> Hundreds to thousands (much less!)</p>
+                            <p><strong>Example:</strong> Fine-tuning pre-trained models</p>
+                            <p><strong>Benefit:</strong> Leverage existing knowledge from large datasets</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Data Quality Checklist</h4>
+                    
+                    <div class="checklist-section">
+                        <h5>✅ Before Starting Your ML Project</h5>
+                        <ul class="checklist">
+                            <li><strong>Availability:</strong> Do you have access to the data you need?</li>
+                            <li><strong>Quantity:</strong> Do you have enough examples for your problem type?</li>
+                            <li><strong>Quality:</strong> Is the data accurate and reliable?</li>
+                            <li><strong>Completeness:</strong> Are there missing values? How many?</li>
+                            <li><strong>Relevance:</strong> Does the data contain signals related to your target?</li>
+                            <li><strong>Recency:</strong> Is the data up-to-date and representative?</li>
+                            <li><strong>Labels:</strong> For supervised learning, do you have labeled data?</li>
+                            <li><strong>Bias:</strong> Does the data represent all groups fairly?</li>
+                            <li><strong>Privacy:</strong> Can you legally use this data? (GDPR, CCPA, etc.)</li>
+                            <li><strong>Cost:</strong> What's the cost of collecting and storing this data?</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Handling Data Limitations</h4>
+                    
+                    <div class="strategies">
+                        <div class="strategy-card">
+                            <h5>Limited Labeled Data</h5>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Semi-supervised learning</li>
+                                <li>Active learning (label most informative examples)</li>
+                                <li>Transfer learning</li>
+                                <li>Data augmentation</li>
+                                <li>Synthetic data generation</li>
+                            </ul>
+                        </div>
+
+                        <div class="strategy-card">
+                            <h5>Imbalanced Data</h5>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Oversampling minority class (SMOTE)</li>
+                                <li>Undersampling majority class</li>
+                                <li>Class weights in loss function</li>
+                                <li>Ensemble methods</li>
+                                <li>Anomaly detection approaches</li>
+                            </ul>
+                        </div>
+
+                        <div class="strategy-card">
+                            <h5>Missing Data</h5>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Imputation (mean, median, mode)</li>
+                                <li>Forward/backward fill (time series)</li>
+                                <li>ML-based imputation</li>
+                                <li>Create "missing" indicator feature</li>
+                                <li>Remove rows/columns if &lt;5% missing</li>
+                            </ul>
+                        </div>
+
+                        <div class="strategy-card">
+                            <h5>Noisy Data</h5>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Outlier detection and removal</li>
+                                <li>Smoothing techniques</li>
+                                <li>Ensemble methods (robust to noise)</li>
+                                <li>Regularization</li>
+                                <li>Data validation pipelines</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="practice-questions">
+                <h3>📝 Practice Questions - Domain 1</h3>
+                
+                <div class="question">
+                    <p><strong>Question 1:</strong> Your company wants to predict customer churn. You have 100,000 customers, but only 2% have churned. What metric should you prioritize?</p>
+                    <details>
+                        <summary>Show Answer</summary>
+                        <p><strong>Answer:</strong> Recall (or F1 Score)</p>
+                        <p><strong>Explanation:</strong> With only 2% churn, accuracy would be misleading (98% accuracy by predicting "no churn" for everyone). You want to catch as many churning customers as possible (high recall), while also not annoying too many loyal customers with retention offers (reasonable precision). F1 Score balances both.</p>
+                    </details>
+                </div>
+
+                <div class="question">
+                    <p><strong>Question 2:</strong> You're building a house price prediction model. Which type of ML problem is this?</p>
+                    <details>
+                        <summary>Show Answer</summary>
+                        <p><strong>Answer:</strong> Regression</p>
+                        <p><strong>Explanation:</strong> House prices are continuous numerical values, making this a regression problem. You're predicting a number (price) rather than a category.</p>
+                    </details>
+                </div>
+
+                <div class="question">
+                    <p><strong>Question 3:</strong> Your fraud detection model has 95% precision and 60% recall. What does this mean for your business?</p>
+                    <details>
+                        <summary>Show Answer</summary>
+                        <p><strong>Answer:</strong> The model is very accurate when it flags fraud (95% of flagged transactions are actually fraudulent), but it's missing 40% of fraudulent transactions.</p>
+                        <p><strong>Explanation:</strong> High precision means few false alarms (good for customer experience), but low recall means you're letting significant fraud through (bad for business). You might want to adjust the threshold to increase recall, accepting some decrease in precision.</p>
+                    </details>
+                </div>
+            </div>
+
+            <div class="resources-section">
+                <h3>📚 Additional Resources - Domain 1</h3>
+                <ul>
+                    <li><a href="https://developers.google.com/machine-learning/crash-course/framing/ml-terminology" target="_blank">Google ML Crash Course: Framing</a></li>
+                    <li><a href="https://cloud.google.com/architecture/ml-on-gcp-best-practices" target="_blank">ML on GCP Best Practices</a></li>
+                    <li><a href="https://developers.google.com/machine-learning/crash-course/classification" target="_blank">Classification Metrics</a></li>
+                    <li><a href="https://cloud.google.com/blog/products/ai-machine-learning/when-to-use-machine-learning" target="_blank">When to Use Machine Learning</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Placeholder for remaining domains -->
+        <section id="domain2" class="content-section">
+            <h2>🏗️ Domain 2: Architecting ML Solutions (20%)</h2>
+            <p class="coming-soon">Content being developed... This section will cover GCP ML services, architecture patterns, and solution design.</p>
+        </section>
+
+        <section id="domain3" class="content-section">
+            <h2>📊 Domain 3: Data Preparation & Processing (15%)</h2>
+            <p class="coming-soon">Content being developed... This section will cover data ingestion, preprocessing, and feature engineering.</p>
+        </section>
+
+        <section id="domain4" class="content-section">
+            <h2>🤖 Domain 4: Model Development (20%)</h2>
+            <p class="coming-soon">Content being developed... This section will cover model training, evaluation, and hyperparameter tuning.</p>
+        </section>
+
+        <section id="domain5" class="content-section">
+            <h2>⚙️ Domain 5: ML Pipeline Automation (10%)</h2>
+            <p class="coming-soon">Content being developed... This section will cover Vertex AI Pipelines and MLOps.</p>
+        </section>
+
+        <section id="domain6" class="content-section">
+            <h2>🚀 Domain 6: Model Deployment & Serving (10%)</h2>
+            <p class="coming-soon">Content being developed... This section will cover model deployment strategies and serving patterns.</p>
+        </section>
+
+        <section id="domain7" class="content-section">
+            <h2>📈 Domain 7: ML Solution Monitoring (10%)</h2>
+            <p class="coming-soon">Content being developed... This section will cover model monitoring, drift detection, and retraining.</p>
+        </section>
+
+        <section id="resources" class="content-section">
+            <h2>📚 Official Google Resources</h2>
+            
+            <div class="resource-category">
+                <h3>Official Documentation</h3>
+                <ul>
+                    <li><a href="https://cloud.google.com/vertex-ai/docs" target="_blank">Vertex AI Documentation</a></li>
+                    <li><a href="https://cloud.google.com/bigquery/docs/bqml-introduction" target="_blank">BigQuery ML Documentation</a></li>
+                    <li><a href="https://cloud.google.com/automl/docs" target="_blank">AutoML Documentation</a></li>
+                </ul>
+            </div>
+
+            <div class="resource-category">
+                <h3>Training & Courses</h3>
+                <ul>
+                    <li><a href="https://www.cloudskillsboost.google/paths/17" target="_blank">Machine Learning Engineer Learning Path (Cloud Skills Boost)</a></li>
+                    <li><a href="https://developers.google.com/machine-learning/crash-course" target="_blank">Google ML Crash Course</a></li>
+                    <li><a href="https://www.coursera.org/professional-certificates/preparing-for-google-cloud-machine-learning-engineer-professional-certificate" target="_blank">Coursera: Preparing for Google Cloud ML Engineer</a></li>
+                </ul>
+            </div>
+
+            <div class="resource-category">
+                <h3>Practice & Labs</h3>
+                <ul>
+                    <li><a href="https://www.cloudskillsboost.google/quests/34" target="_blank">Baseline: Data, ML, AI Quest</a></li>
+                    <li><a href="https://www.cloudskillsboost.google/quests/82" target="_blank">Intermediate ML: TensorFlow on GCP</a></li>
+                    <li><a href="https://www.cloudskillsboost.google/quests/83" target="_blank">Advanced ML: ML Infrastructure</a></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2024 Google Professional Machine Learning Engineer Study Guide</p>
+            <p>Created for certification preparation | Not affiliated with Google</p>
+            <p>Good luck with your certification! 🎓</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

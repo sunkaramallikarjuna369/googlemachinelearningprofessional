@@ -1,0 +1,76 @@
+GOOGLE PROFESSIONAL MACHINE LEARNING ENGINEER CERTIFICATION
+Study Guide Creation Plan
+
+=== OFFICIAL GOOGLE RESOURCES TO INCORPORATE ===
+
+1. Google Cloud Skills Boost (formerly Qwiklabs)
+   - Machine Learning Engineer Learning Path
+   - Vertex AI tutorials
+   - BigQuery ML tutorials
+   
+2. Google Cloud Documentation
+   - Vertex AI documentation
+   - AI Platform documentation  
+   - Best practices guides
+   
+3. Google Cloud Training
+   - Preparing for the Professional ML Engineer Exam
+   - Machine Learning on Google Cloud
+   - MLOps fundamentals
+   
+4. Google Developers
+   - Machine Learning Crash Course
+   - TensorFlow tutorials
+   - ML best practices
+
+=== EXAM DOMAINS (from PDF analysis) ===
+
+Domain 1: Framing ML Problems
+- Business problem to ML problem translation
+- Success metrics definition
+- Data requirements
+
+Domain 2: Architecting ML Solutions  
+- GCP services selection (Vertex AI, BigQuery ML, AutoML)
+- Data pipeline design
+- Model serving architecture
+
+Domain 3: Data Preparation & Processing
+- Data ingestion (Cloud Storage, BigQuery, Dataflow)
+- Feature engineering
+- Data validation (TensorFlow Data Validation)
+
+Domain 4: Model Development
+- Algorithm selection
+- Training (custom training, AutoML)
+- Hyperparameter tuning
+- Model evaluation metrics
+
+Domain 5: ML Pipeline Automation
+- Vertex AI Pipelines
+- Kubeflow Pipelines
+- CI/CD for ML
+
+Domain 6: Model Deployment & Serving
+- Batch vs online prediction
+- Model monitoring
+- A/B testing
+- Model versioning
+
+Domain 7: ML Solution Monitoring & Optimization
+- Performance monitoring
+- Drift detection
+- Retraining triggers
+- Cost optimization
+
+=== CONTENT STRUCTURE ===
+
+For each topic:
+1. Concept explanation (beginner-friendly)
+2. Google Cloud implementation
+3. Code examples
+4. Best practices
+5. Common pitfalls
+6. Exam tips
+7. Practice questions
+
