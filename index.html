@@ -1959,7 +1959,737 @@ test = df[df['date'] >= '2024-01-01']</code></pre>
 
         <section id="domain4" class="content-section">
             <h2>🤖 Domain 4: Model Development (20%)</h2>
-            <p class="coming-soon">Content being developed... This section will cover model training, evaluation, and hyperparameter tuning.</p>
+            
+            <div class="topic">
+                <h3>4.1 Algorithm Selection</h3>
+                
+                <div class="concept">
+                    <h4>Choosing the Right Algorithm</h4>
+                    
+                    <div class="algorithm-guide">
+                        <div class="algo-card">
+                            <h5>Linear Models</h5>
+                            <p><strong>Algorithms:</strong> Linear Regression, Logistic Regression, Ridge, Lasso</p>
+                            <p><strong>Best for:</strong></p>
+                            <ul>
+                                <li>Linear relationships</li>
+                                <li>High interpretability needed</li>
+                                <li>Small to medium datasets</li>
+                                <li>Fast training required</li>
+                            </ul>
+                            <p><strong>Pros:</strong> Fast, interpretable, low overfitting risk</p>
+                            <p><strong>Cons:</strong> Can't capture complex patterns</p>
+                        </div>
+
+                        <div class="algo-card">
+                            <h5>Tree-Based Models</h5>
+                            <p><strong>Algorithms:</strong> Decision Trees, Random Forest, XGBoost, LightGBM</p>
+                            <p><strong>Best for:</strong></p>
+                            <ul>
+                                <li>Tabular data</li>
+                                <li>Non-linear relationships</li>
+                                <li>Mixed feature types</li>
+                                <li>Feature importance needed</li>
+                            </ul>
+                            <p><strong>Pros:</strong> Handle non-linearity, robust to outliers, no scaling needed</p>
+                            <p><strong>Cons:</strong> Can overfit (single trees), computationally expensive (ensembles)</p>
+                        </div>
+
+                        <div class="algo-card">
+                            <h5>Neural Networks</h5>
+                            <p><strong>Algorithms:</strong> MLP, CNN, RNN, Transformers</p>
+                            <p><strong>Best for:</strong></p>
+                            <ul>
+                                <li>Large datasets (millions of examples)</li>
+                                <li>Complex patterns</li>
+                                <li>Images, text, audio</li>
+                                <li>Transfer learning available</li>
+                            </ul>
+                            <p><strong>Pros:</strong> Can learn any function, state-of-the-art for many tasks</p>
+                            <p><strong>Cons:</strong> Need lots of data, slow training, hard to interpret</p>
+                        </div>
+
+                        <div class="algo-card">
+                            <h5>Support Vector Machines (SVM)</h5>
+                            <p><strong>Best for:</strong></p>
+                            <ul>
+                                <li>Small to medium datasets</li>
+                                <li>High-dimensional data</li>
+                                <li>Clear margin of separation</li>
+                            </ul>
+                            <p><strong>Pros:</strong> Effective in high dimensions, memory efficient</p>
+                            <p><strong>Cons:</strong> Slow for large datasets, sensitive to feature scaling</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Decision Tree for Algorithm Selection</h4>
+                    
+                    <div class="decision-flow">
+                        <ol>
+                            <li><strong>What type of data?</strong>
+                                <ul>
+                                    <li><strong>Images:</strong> CNN (ResNet, EfficientNet) or Vision Transformer</li>
+                                    <li><strong>Text:</strong> Transformers (BERT, T5) or RNN</li>
+                                    <li><strong>Tabular:</strong> XGBoost, LightGBM, or Neural Networks</li>
+                                    <li><strong>Time Series:</strong> ARIMA, LSTM, or Prophet</li>
+                                </ul>
+                            </li>
+                            <li><strong>How much data?</strong>
+                                <ul>
+                                    <li><strong>< 1K examples:</strong> Linear models, simple trees</li>
+                                    <li><strong>1K - 100K:</strong> Random Forest, XGBoost</li>
+                                    <li><strong>> 100K:</strong> Neural networks, deep learning</li>
+                                </ul>
+                            </li>
+                            <li><strong>Interpretability required?</strong>
+                                <ul>
+                                    <li><strong>Yes:</strong> Linear models, Decision Trees, SHAP values</li>
+                                    <li><strong>No:</strong> Any model (optimize for performance)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Training time constraints?</strong>
+                                <ul>
+                                    <li><strong>Fast:</strong> Linear models, simple trees</li>
+                                    <li><strong>Moderate:</strong> Random Forest, XGBoost</li>
+                                    <li><strong>Slow OK:</strong> Neural networks, hyperparameter tuning</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>4.2 Model Training on Vertex AI</h3>
+                
+                <div class="concept">
+                    <h4>Training Approaches</h4>
+                    
+                    <div class="training-methods">
+                        <div class="method-card">
+                            <h5>1. Pre-built Containers</h5>
+                            <p><strong>Use when:</strong> Using standard frameworks (TensorFlow, PyTorch, scikit-learn)</p>
+                            <div class="code-example">
+                                <pre><code>from google.cloud import aiplatform
+
+job = aiplatform.CustomTrainingJob(
+    display_name="training-job",
+    script_path="train.py",
+    container_uri="gcr.io/cloud-aiplatform/training/tf-cpu.2-11:latest",
+    requirements=["pandas==1.5.0", "scikit-learn==1.2.0"]
+)
+
+model = job.run(
+    dataset=dataset,
+    replica_count=1,
+    machine_type="n1-standard-4",
+    accelerator_type="NVIDIA_TESLA_T4",
+    accelerator_count=1
+)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>2. Custom Containers</h5>
+                            <p><strong>Use when:</strong> Need specific dependencies or custom environment</p>
+                            <div class="code-example">
+                                <pre><code># Dockerfile
+FROM gcr.io/deeplearning-platform-release/pytorch-gpu
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY train.py .
+ENTRYPOINT ["python", "train.py"]
+
+# Build and push
+docker build -t gcr.io/my-project/custom-trainer .
+docker push gcr.io/my-project/custom-trainer
+
+# Use in Vertex AI
+job = aiplatform.CustomContainerTrainingJob(
+    display_name="custom-training",
+    container_uri="gcr.io/my-project/custom-trainer"
+)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>3. Distributed Training</h5>
+                            <p><strong>Use when:</strong> Large models or datasets that don't fit on single machine</p>
+                            <div class="code-example">
+                                <pre><code># Multi-GPU training
+model = job.run(
+    replica_count=1,
+    machine_type="n1-standard-16",
+    accelerator_type="NVIDIA_TESLA_V100",
+    accelerator_count=4  # 4 GPUs on single machine
+)
+
+# Multi-node distributed training
+model = job.run(
+    replica_count=4,  # 4 machines
+    machine_type="n1-highmem-8",
+    accelerator_type="NVIDIA_TESLA_V100",
+    accelerator_count=1  # 1 GPU per machine
+)</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Hyperparameter Tuning</h4>
+                    <p><strong>Goal:</strong> Find optimal hyperparameters to maximize model performance</p>
+                    
+                    <div class="tuning-strategies">
+                        <div class="strategy-card">
+                            <h5>Grid Search</h5>
+                            <p><strong>How:</strong> Try all combinations of hyperparameters</p>
+                            <p><strong>Pros:</strong> Exhaustive, guaranteed to find best in grid</p>
+                            <p><strong>Cons:</strong> Exponentially slow with more parameters</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.model_selection import GridSearchCV
+
+param_grid = {
+    'max_depth': [3, 5, 7, 10],
+    'learning_rate': [0.01, 0.1, 0.3],
+    'n_estimators': [100, 200, 300]
+}
+
+grid_search = GridSearchCV(
+    estimator=XGBClassifier(),
+    param_grid=param_grid,
+    cv=5,
+    scoring='f1',
+    n_jobs=-1
+)
+
+grid_search.fit(X_train, y_train)
+best_params = grid_search.best_params_</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="strategy-card">
+                            <h5>Random Search</h5>
+                            <p><strong>How:</strong> Randomly sample hyperparameter combinations</p>
+                            <p><strong>Pros:</strong> Faster than grid search, often finds good solutions</p>
+                            <p><strong>Cons:</strong> Not exhaustive, might miss optimal</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import uniform, randint
+
+param_distributions = {
+    'max_depth': randint(3, 15),
+    'learning_rate': uniform(0.01, 0.3),
+    'n_estimators': randint(100, 500)
+}
+
+random_search = RandomizedSearchCV(
+    estimator=XGBClassifier(),
+    param_distributions=param_distributions,
+    n_iter=50,  # Number of random combinations
+    cv=5,
+    scoring='f1',
+    n_jobs=-1
+)
+
+random_search.fit(X_train, y_train)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="strategy-card">
+                            <h5>Bayesian Optimization (Vertex AI)</h5>
+                            <p><strong>How:</strong> Use previous trials to inform next hyperparameter choices</p>
+                            <p><strong>Pros:</strong> Most efficient, learns from past trials</p>
+                            <p><strong>Cons:</strong> More complex setup</p>
+                            <div class="code-example">
+                                <pre><code>from google.cloud import aiplatform
+
+# Define hyperparameter spec
+hyperparameter_tuning_job = aiplatform.HyperparameterTuningJob(
+    display_name="tuning-job",
+    custom_job=custom_job,
+    metric_spec={'accuracy': 'maximize'},
+    parameter_spec={
+        'learning_rate': hpt.DoubleParameterSpec(min=0.001, max=0.1, scale='log'),
+        'batch_size': hpt.DiscreteParameterSpec(values=[16, 32, 64, 128]),
+        'num_layers': hpt.IntegerParameterSpec(min=2, max=5, scale='linear')
+    },
+    max_trial_count=20,
+    parallel_trial_count=4,
+    search_algorithm='bayesian'
+)
+
+hyperparameter_tuning_job.run()</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="best-practices">
+                        <h5>Hyperparameter Tuning Best Practices:</h5>
+                        <ul>
+                            <li><strong>Start with defaults:</strong> Establish baseline before tuning</li>
+                            <li><strong>Tune one at a time:</strong> Understand impact of each parameter</li>
+                            <li><strong>Use log scale:</strong> For learning rate, regularization (0.001, 0.01, 0.1)</li>
+                            <li><strong>Set time/budget limits:</strong> Don't tune forever</li>
+                            <li><strong>Use early stopping:</strong> Stop bad trials early to save time</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>4.3 Model Evaluation</h3>
+                
+                <div class="concept">
+                    <h4>Cross-Validation Strategies</h4>
+                    
+                    <div class="cv-methods">
+                        <div class="method-card">
+                            <h5>K-Fold Cross-Validation</h5>
+                            <p><strong>How:</strong> Split data into K folds, train on K-1, validate on 1, repeat K times</p>
+                            <p><strong>Use when:</strong> Standard case, enough data</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.model_selection import cross_val_score
+
+scores = cross_val_score(
+    estimator=model,
+    X=X_train,
+    y=y_train,
+    cv=5,  # 5-fold
+    scoring='f1'
+)
+
+print(f"Mean F1: {scores.mean():.3f} (+/- {scores.std():.3f})")</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>Stratified K-Fold</h5>
+                            <p><strong>How:</strong> Ensure each fold has same class distribution</p>
+                            <p><strong>Use when:</strong> Imbalanced classes</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.model_selection import StratifiedKFold
+
+skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+scores = cross_val_score(model, X_train, y_train, cv=skf, scoring='f1')</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>Time Series Cross-Validation</h5>
+                            <p><strong>How:</strong> Train on past, validate on future (expanding window)</p>
+                            <p><strong>Use when:</strong> Time-series data</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.model_selection import TimeSeriesSplit
+
+tscv = TimeSeriesSplit(n_splits=5)
+for train_idx, val_idx in tscv.split(X):
+    X_train, X_val = X[train_idx], X[val_idx]
+    y_train, y_val = y[train_idx], y[val_idx]
+    # Train and evaluate</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Confusion Matrix Analysis</h4>
+                    
+                    <div class="code-example">
+                        <pre><code>from sklearn.metrics import confusion_matrix, classification_report
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Generate predictions
+y_pred = model.predict(X_test)
+
+# Confusion matrix
+cm = confusion_matrix(y_test, y_pred)
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.title('Confusion Matrix')
+
+# Detailed metrics
+print(classification_report(y_test, y_pred))</code></pre>
+                    </div>
+
+                    <div class="confusion-matrix-guide">
+                        <h5>Understanding Confusion Matrix:</h5>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Predicted Positive</th>
+                                    <th>Predicted Negative</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Actual Positive</strong></td>
+                                    <td>True Positive (TP)</td>
+                                    <td>False Negative (FN) - Type II Error</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Actual Negative</strong></td>
+                                    <td>False Positive (FP) - Type I Error</td>
+                                    <td>True Negative (TN)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>ROC Curve and AUC</h4>
+                    
+                    <div class="code-example">
+                        <pre><code>from sklearn.metrics import roc_curve, roc_auc_score
+import matplotlib.pyplot as plt
+
+# Get prediction probabilities
+y_proba = model.predict_proba(X_test)[:, 1]
+
+# Calculate ROC curve
+fpr, tpr, thresholds = roc_curve(y_test, y_proba)
+auc = roc_auc_score(y_test, y_proba)
+
+# Plot
+plt.plot(fpr, tpr, label=f'AUC = {auc:.3f}')
+plt.plot([0, 1], [0, 1], 'k--', label='Random')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve')
+plt.legend()
+plt.show()</code></pre>
+                    </div>
+
+                    <div class="roc-interpretation">
+                        <h5>Interpreting AUC:</h5>
+                        <ul>
+                            <li><strong>AUC = 1.0:</strong> Perfect classifier</li>
+                            <li><strong>AUC = 0.9-1.0:</strong> Excellent</li>
+                            <li><strong>AUC = 0.8-0.9:</strong> Good</li>
+                            <li><strong>AUC = 0.7-0.8:</strong> Fair</li>
+                            <li><strong>AUC = 0.5-0.7:</strong> Poor</li>
+                            <li><strong>AUC = 0.5:</strong> Random guessing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>4.4 Handling Common ML Issues</h3>
+                
+                <div class="concept">
+                    <h4>Overfitting</h4>
+                    <p><strong>Symptoms:</strong> High training accuracy, low validation/test accuracy</p>
+                    
+                    <div class="solutions">
+                        <h5>Solutions:</h5>
+                        <div class="solution-card">
+                            <h6>1. Get More Data</h6>
+                            <p>More training examples help model generalize better</p>
+                        </div>
+
+                        <div class="solution-card">
+                            <h6>2. Data Augmentation</h6>
+                            <div class="code-example">
+                                <pre><code># For images
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+datagen = ImageDataGenerator(
+    rotation_range=20,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    horizontal_flip=True,
+    zoom_range=0.2
+)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="solution-card">
+                            <h6>3. Regularization</h6>
+                            <div class="code-example">
+                                <pre><code># L1 (Lasso) - feature selection
+from sklearn.linear_model import Lasso
+model = Lasso(alpha=0.1)
+
+# L2 (Ridge) - shrink coefficients
+from sklearn.linear_model import Ridge
+model = Ridge(alpha=1.0)
+
+# Elastic Net - combination of L1 and L2
+from sklearn.linear_model import ElasticNet
+model = ElasticNet(alpha=0.1, l1_ratio=0.5)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="solution-card">
+                            <h6>4. Dropout (Neural Networks)</h6>
+                            <div class="code-example">
+                                <pre><code>from tensorflow.keras.layers import Dropout
+
+model = Sequential([
+    Dense(128, activation='relu'),
+    Dropout(0.5),  # Drop 50% of neurons during training
+    Dense(64, activation='relu'),
+    Dropout(0.3),
+    Dense(10, activation='softmax')
+])</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="solution-card">
+                            <h6>5. Early Stopping</h6>
+                            <div class="code-example">
+                                <pre><code>from tensorflow.keras.callbacks import EarlyStopping
+
+early_stop = EarlyStopping(
+    monitor='val_loss',
+    patience=10,  # Stop if no improvement for 10 epochs
+    restore_best_weights=True
+)
+
+model.fit(X_train, y_train, 
+          validation_data=(X_val, y_val),
+          callbacks=[early_stop],
+          epochs=100)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="solution-card">
+                            <h6>6. Reduce Model Complexity</h6>
+                            <ul>
+                                <li>Fewer layers in neural networks</li>
+                                <li>Lower max_depth in trees</li>
+                                <li>Fewer features (feature selection)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Underfitting</h4>
+                    <p><strong>Symptoms:</strong> Low training accuracy, low validation accuracy</p>
+                    
+                    <div class="solutions">
+                        <h5>Solutions:</h5>
+                        <div class="solution-card">
+                            <h6>1. Increase Model Complexity</h6>
+                            <ul>
+                                <li>More layers/neurons in neural networks</li>
+                                <li>Higher max_depth in trees</li>
+                                <li>Polynomial features for linear models</li>
+                            </ul>
+                        </div>
+
+                        <div class="solution-card">
+                            <h6>2. Add More Features</h6>
+                            <p>Feature engineering to capture patterns</p>
+                        </div>
+
+                        <div class="solution-card">
+                            <h6>3. Reduce Regularization</h6>
+                            <p>Lower alpha in Ridge/Lasso, lower dropout rate</p>
+                        </div>
+
+                        <div class="solution-card">
+                            <h6>4. Train Longer</h6>
+                            <p>More epochs for neural networks, more estimators for ensembles</p>
+                        </div>
+
+                        <div class="solution-card">
+                            <h6>5. Try Different Algorithm</h6>
+                            <p>Switch from linear to non-linear model</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Class Imbalance</h4>
+                    <p><strong>Problem:</strong> One class has much more examples than others (e.g., 99% negative, 1% positive)</p>
+                    
+                    <div class="solutions">
+                        <h5>Solutions:</h5>
+                        <div class="solution-card">
+                            <h6>1. Resampling</h6>
+                            <div class="code-example">
+                                <pre><code>from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import RandomUnderSampler
+
+# Oversample minority class (SMOTE)
+smote = SMOTE(random_state=42)
+X_resampled, y_resampled = smote.fit_resample(X_train, y_train)
+
+# Undersample majority class
+undersampler = RandomUnderSampler(random_state=42)
+X_resampled, y_resampled = undersampler.fit_resample(X_train, y_train)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="solution-card">
+                            <h6>2. Class Weights</h6>
+                            <div class="code-example">
+                                <pre><code># Scikit-learn
+from sklearn.ensemble import RandomForestClassifier
+model = RandomForestClassifier(class_weight='balanced')
+
+# XGBoost
+import xgboost as xgb
+scale_pos_weight = len(y_train[y_train==0]) / len(y_train[y_train==1])
+model = xgb.XGBClassifier(scale_pos_weight=scale_pos_weight)
+
+# TensorFlow/Keras
+class_weights = {0: 1.0, 1: 10.0}  # Give 10x weight to minority class
+model.fit(X_train, y_train, class_weight=class_weights)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="solution-card">
+                            <h6>3. Use Appropriate Metrics</h6>
+                            <p>Don't use accuracy! Use:</p>
+                            <ul>
+                                <li>Precision, Recall, F1-Score</li>
+                                <li>AUC-ROC</li>
+                                <li>Precision-Recall curve</li>
+                            </ul>
+                        </div>
+
+                        <div class="solution-card">
+                            <h6>4. Anomaly Detection Approach</h6>
+                            <p>If extreme imbalance (< 1% positive), treat as anomaly detection</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Training-Serving Skew</h4>
+                    <p><strong>Problem:</strong> Model performs well in training but poorly in production due to data differences</p>
+                    
+                    <div class="causes-solutions">
+                        <h5>Common Causes & Solutions:</h5>
+                        <div class="cause-card">
+                            <h6>1. Different Feature Engineering</h6>
+                            <p><strong>Cause:</strong> Training uses different preprocessing than serving</p>
+                            <p><strong>Solution:</strong> Use same preprocessing code for both (TensorFlow Transform, Vertex AI Feature Store)</p>
+                        </div>
+
+                        <div class="cause-card">
+                            <h6>2. Data Distribution Shift</h6>
+                            <p><strong>Cause:</strong> Production data differs from training data</p>
+                            <p><strong>Solution:</strong> Monitor data drift, retrain regularly with recent data</p>
+                        </div>
+
+                        <div class="cause-card">
+                            <h6>3. Missing Features at Serving Time</h6>
+                            <p><strong>Cause:</strong> Features available in training but not in production</p>
+                            <p><strong>Solution:</strong> Only use features available at prediction time</p>
+                        </div>
+
+                        <div class="cause-card">
+                            <h6>4. Data Leakage</h6>
+                            <p><strong>Cause:</strong> Training data includes information from the future</p>
+                            <p><strong>Solution:</strong> Use point-in-time features, proper train/test split</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>4.5 Practice Questions</h3>
+                
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 1:</h4>
+                        <p>Your model has 95% training accuracy but only 70% validation accuracy. What's the problem and how do you fix it?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Overfitting</h5>
+                        <p><strong>Problem:</strong> Model memorizes training data but doesn't generalize</p>
+                        <p><strong>Solutions (try in order):</strong></p>
+                        <ol>
+                            <li>Get more training data</li>
+                            <li>Add regularization (L1/L2, dropout)</li>
+                            <li>Reduce model complexity (fewer layers, lower depth)</li>
+                            <li>Use early stopping</li>
+                            <li>Data augmentation (for images/text)</li>
+                            <li>Feature selection (remove irrelevant features)</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 2:</h4>
+                        <p>You're building a fraud detection model. Your dataset has 99.5% legitimate transactions and 0.5% fraudulent. Your model achieves 99.5% accuracy. Is this good?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: No, the model is likely useless</h5>
+                        <p><strong>Reasoning:</strong></p>
+                        <ul>
+                            <li>A model that predicts "legitimate" for everything gets 99.5% accuracy</li>
+                            <li>Accuracy is misleading with imbalanced data</li>
+                            <li>Need to check: Precision, Recall, F1-Score for fraud class</li>
+                        </ul>
+                        <p><strong>Solutions:</strong></p>
+                        <ol>
+                            <li>Use class weights or SMOTE</li>
+                            <li>Optimize for F1-Score or AUC-ROC instead of accuracy</li>
+                            <li>Focus on recall (catch all fraud) or precision (minimize false alarms) based on business needs</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 3:</h4>
+                        <p>You need to tune hyperparameters for an XGBoost model. You have 4 hyperparameters to tune, each with 5 possible values. Grid search would take 625 trials (5^4). What's a better approach?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Use Bayesian Optimization (Vertex AI Hyperparameter Tuning)</h5>
+                        <p><strong>Reasoning:</strong></p>
+                        <ul>
+                            <li>Grid search: 625 trials (very slow)</li>
+                            <li>Random search: ~50-100 trials (faster, but random)</li>
+                            <li>Bayesian optimization: ~20-30 trials (smartest, learns from past trials)</li>
+                        </ul>
+                        <p><strong>Implementation:</strong></p>
+                        <pre><code>hyperparameter_tuning_job = aiplatform.HyperparameterTuningJob(
+    metric_spec={'auc': 'maximize'},
+    parameter_spec={...},
+    max_trial_count=30,
+    search_algorithm='bayesian'
+)</code></pre>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 4:</h4>
+                        <p>Your model performs well in training but poorly in production. Predictions are consistently worse than expected. What could be wrong?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Training-Serving Skew</h5>
+                        <p><strong>Possible Causes:</strong></p>
+                        <ol>
+                            <li><strong>Different preprocessing:</strong> Training and serving use different feature engineering code</li>
+                            <li><strong>Data drift:</strong> Production data distribution changed from training data</li>
+                            <li><strong>Missing features:</strong> Some features available in training but not at serving time</li>
+                            <li><strong>Data leakage:</strong> Training data included future information</li>
+                        </ol>
+                        <p><strong>Solutions:</strong></p>
+                        <ul>
+                            <li>Use Vertex AI Feature Store for consistent features</li>
+                            <li>Monitor data drift with Vertex AI Model Monitoring</li>
+                            <li>Validate that all training features are available at serving time</li>
+                            <li>Use TensorFlow Data Validation (TFDV) to compare training and serving data</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="domain5" class="content-section">
