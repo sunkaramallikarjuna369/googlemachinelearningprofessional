@@ -2694,17 +2694,608 @@ model.fit(X_train, y_train, class_weight=class_weights)</code></pre>
 
         <section id="domain5" class="content-section">
             <h2>⚙️ Domain 5: ML Pipeline Automation (10%)</h2>
-            <p class="coming-soon">Content being developed... This section will cover Vertex AI Pipelines and MLOps.</p>
+            
+            <div class="topic">
+                <h3>5.1 Vertex AI Pipelines</h3>
+                
+                <div class="concept">
+                    <h4>What are ML Pipelines?</h4>
+                    <p><strong>Definition:</strong> Automated, reproducible workflows that orchestrate ML tasks from data preparation to model deployment</p>
+                    
+                    <div class="pipeline-benefits">
+                        <h5>Benefits:</h5>
+                        <ul>
+                            <li><strong>Reproducibility:</strong> Same pipeline produces same results</li>
+                            <li><strong>Automation:</strong> Reduce manual steps and errors</li>
+                            <li><strong>Scalability:</strong> Run on large datasets with managed infrastructure</li>
+                            <li><strong>Versioning:</strong> Track pipeline versions and experiments</li>
+                            <li><strong>Monitoring:</strong> Track pipeline execution and failures</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Creating Vertex AI Pipelines</h4>
+                    
+                    <div class="code-example">
+                        <h5>Example: Simple Training Pipeline</h5>
+                        <pre><code>from kfp.v2 import dsl
+from kfp.v2.dsl import component, Input, Output, Dataset, Model
+from google.cloud import aiplatform
+
+@component(base_image="python:3.9")
+def load_data(dataset_path: str, output_data: Output[Dataset]):
+    """Load and preprocess data"""
+    import pandas as pd
+    df = pd.read_csv(dataset_path)
+    df.to_csv(output_data.path, index=False)
+
+@component(base_image="python:3.9", packages_to_install=["scikit-learn"])
+def train_model(input_data: Input[Dataset], model_output: Output[Model]):
+    """Train ML model"""
+    import pandas as pd
+    from sklearn.ensemble import RandomForestClassifier
+    import pickle
+    
+    df = pd.read_csv(input_data.path)
+    X = df.drop('target', axis=1)
+    y = df['target']
+    
+    model = RandomForestClassifier()
+    model.fit(X, y)
+    
+    with open(model_output.path, 'wb') as f:
+        pickle.dump(model, f)
+
+@component(base_image="python:3.9", packages_to_install=["scikit-learn"])
+def evaluate_model(model: Input[Model], test_data: Input[Dataset]) -> float:
+    """Evaluate model performance"""
+    import pandas as pd
+    import pickle
+    from sklearn.metrics import accuracy_score
+    
+    with open(model.path, 'rb') as f:
+        model = pickle.load(f)
+    
+    df = pd.read_csv(test_data.path)
+    X = df.drop('target', axis=1)
+    y = df['target']
+    
+    predictions = model.predict(X)
+    accuracy = accuracy_score(y, predictions)
+    return accuracy
+
+@dsl.pipeline(name="ml-training-pipeline")
+def training_pipeline(dataset_path: str):
+    """Complete ML training pipeline"""
+    load_task = load_data(dataset_path=dataset_path)
+    train_task = train_model(input_data=load_task.outputs['output_data'])
+    eval_task = evaluate_model(
+        model=train_task.outputs['model_output'],
+        test_data=load_task.outputs['output_data']
+    )
+
+# Compile and run pipeline
+from kfp.v2 import compiler
+compiler.Compiler().compile(
+    pipeline_func=training_pipeline,
+    package_path='pipeline.json'
+)
+
+# Submit to Vertex AI
+aiplatform.init(project='my-project', location='us-central1')
+job = aiplatform.PipelineJob(
+    display_name="training-pipeline",
+    template_path="pipeline.json",
+    parameter_values={'dataset_path': 'gs://my-bucket/data.csv'}
+)
+job.run()</code></pre>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Pipeline Best Practices</h4>
+                    
+                    <div class="best-practices">
+                        <ul>
+                            <li><strong>Modular components:</strong> Break pipeline into reusable components</li>
+                            <li><strong>Parameterize:</strong> Make pipelines configurable with parameters</li>
+                            <li><strong>Error handling:</strong> Add retry logic and failure notifications</li>
+                            <li><strong>Caching:</strong> Cache component outputs to speed up reruns</li>
+                            <li><strong>Logging:</strong> Add comprehensive logging for debugging</li>
+                            <li><strong>Testing:</strong> Test components individually before full pipeline</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>5.2 MLOps Practices</h3>
+                
+                <div class="concept">
+                    <h4>CI/CD for ML</h4>
+                    <p><strong>Goal:</strong> Automate testing, training, and deployment of ML models</p>
+                    
+                    <div class="cicd-stages">
+                        <div class="stage-card">
+                            <h5>1. Continuous Integration (CI)</h5>
+                            <ul>
+                                <li>Automated code testing (unit tests, integration tests)</li>
+                                <li>Data validation (schema checks, distribution checks)</li>
+                                <li>Model validation (performance thresholds)</li>
+                                <li>Code quality checks (linting, type checking)</li>
+                            </ul>
+                        </div>
+
+                        <div class="stage-card">
+                            <h5>2. Continuous Training (CT)</h5>
+                            <ul>
+                                <li>Automatically retrain models on new data</li>
+                                <li>Trigger training on schedule or data changes</li>
+                                <li>Track model versions and experiments</li>
+                                <li>Compare new models against baseline</li>
+                            </ul>
+                        </div>
+
+                        <div class="stage-card">
+                            <h5>3. Continuous Deployment (CD)</h5>
+                            <ul>
+                                <li>Automatically deploy models that pass validation</li>
+                                <li>Gradual rollout (canary, blue-green deployment)</li>
+                                <li>Automated rollback on performance degradation</li>
+                                <li>Update monitoring and alerting</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Model Versioning and Experiment Tracking</h4>
+                    
+                    <div class="code-example">
+                        <h5>Using Vertex AI Experiments</h5>
+                        <pre><code>from google.cloud import aiplatform
+
+# Initialize experiment
+aiplatform.init(
+    project='my-project',
+    location='us-central1',
+    experiment='customer-churn-prediction'
+)
+
+# Start experiment run
+aiplatform.start_run(run='run-001')
+
+# Log parameters
+aiplatform.log_params({
+    'learning_rate': 0.01,
+    'batch_size': 32,
+    'num_layers': 3
+})
+
+# Train model
+model.fit(X_train, y_train)
+
+# Log metrics
+aiplatform.log_metrics({
+    'accuracy': 0.95,
+    'precision': 0.93,
+    'recall': 0.94,
+    'f1_score': 0.935
+})
+
+# Log model
+aiplatform.log_model(model, 'model-v1')
+
+# End run
+aiplatform.end_run()</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>5.3 Practice Questions</h3>
+                
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 1:</h4>
+                        <p>You need to retrain your model weekly with new data. The training process involves data preprocessing, feature engineering, model training, and evaluation. What's the best approach?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Create a Vertex AI Pipeline with Cloud Scheduler</h5>
+                        <p><strong>Implementation:</strong></p>
+                        <ol>
+                            <li>Build Vertex AI Pipeline with components for each step</li>
+                            <li>Use Cloud Scheduler to trigger pipeline weekly</li>
+                            <li>Store trained model in Vertex AI Model Registry</li>
+                            <li>Set up monitoring and alerts for pipeline failures</li>
+                        </ol>
+                        <p><strong>Benefits:</strong> Automated, reproducible, scalable, versioned</p>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 2:</h4>
+                        <p>Your team is running many ML experiments with different hyperparameters. How do you track and compare all experiments?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Use Vertex AI Experiments</h5>
+                        <p><strong>Features:</strong></p>
+                        <ul>
+                            <li>Log parameters, metrics, and artifacts for each run</li>
+                            <li>Compare runs side-by-side</li>
+                            <li>Visualize metrics over time</li>
+                            <li>Track model lineage and versions</li>
+                        </ul>
+                        <p><strong>Alternative:</strong> MLflow (open-source, can integrate with Vertex AI)</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="domain6" class="content-section">
             <h2>🚀 Domain 6: Model Deployment & Serving (10%)</h2>
-            <p class="coming-soon">Content being developed... This section will cover model deployment strategies and serving patterns.</p>
+            
+            <div class="topic">
+                <h3>6.1 Deployment Options</h3>
+                
+                <div class="concept">
+                    <h4>Online Predictions (Real-time)</h4>
+                    
+                    <div class="code-example">
+                        <h5>Deploy Model to Endpoint</h5>
+                        <pre><code>from google.cloud import aiplatform
+
+# Upload model
+model = aiplatform.Model.upload(
+    display_name="my-model",
+    artifact_uri="gs://my-bucket/model/",
+    serving_container_image_uri="gcr.io/cloud-aiplatform/prediction/tf2-cpu.2-11:latest"
+)
+
+# Create endpoint
+endpoint = aiplatform.Endpoint.create(display_name="my-endpoint")
+
+# Deploy model to endpoint
+endpoint.deploy(
+    model=model,
+    deployed_model_display_name="my-deployed-model",
+    machine_type="n1-standard-4",
+    min_replica_count=1,
+    max_replica_count=5,
+    traffic_percentage=100
+)
+
+# Make predictions
+predictions = endpoint.predict(instances=[
+    {"feature1": 1.0, "feature2": 2.0}
+])</code></pre>
+                    </div>
+
+                    <div class="deployment-features">
+                        <h5>Features:</h5>
+                        <ul>
+                            <li><strong>Autoscaling:</strong> Automatically scale replicas based on traffic</li>
+                            <li><strong>Traffic splitting:</strong> Route traffic to multiple model versions</li>
+                            <li><strong>GPU support:</strong> Use GPUs for faster inference</li>
+                            <li><strong>Private endpoints:</strong> Deploy in VPC for security</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Batch Predictions</h4>
+                    
+                    <div class="code-example">
+                        <pre><code># Create batch prediction job
+batch_prediction_job = model.batch_predict(
+    job_display_name="batch-prediction-job",
+    gcs_source="gs://my-bucket/input-data.csv",
+    gcs_destination_prefix="gs://my-bucket/predictions/",
+    machine_type="n1-standard-4",
+    starting_replica_count=1,
+    max_replica_count=10
+)
+
+# Wait for completion
+batch_prediction_job.wait()
+
+# Get results from GCS
+# Results written to gs://my-bucket/predictions/</code></pre>
+                    </div>
+
+                    <div class="when-to-use">
+                        <h5>Use Batch Predictions When:</h5>
+                        <ul>
+                            <li>Predictions don't need to be real-time</li>
+                            <li>Processing large volumes of data</li>
+                            <li>Cost optimization is important</li>
+                            <li>Can tolerate higher latency</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Deployment Strategies</h4>
+                    
+                    <div class="strategy-cards">
+                        <div class="strategy-card">
+                            <h5>Blue-Green Deployment</h5>
+                            <p><strong>How:</strong> Deploy new version alongside old, switch traffic all at once</p>
+                            <p><strong>Pros:</strong> Easy rollback, zero downtime</p>
+                            <p><strong>Cons:</strong> Requires double resources temporarily</p>
+                        </div>
+
+                        <div class="strategy-card">
+                            <h5>Canary Deployment</h5>
+                            <p><strong>How:</strong> Gradually route traffic to new version (e.g., 5% → 25% → 50% → 100%)</p>
+                            <p><strong>Pros:</strong> Lower risk, early detection of issues</p>
+                            <p><strong>Cons:</strong> Slower rollout</p>
+                            <div class="code-example">
+                                <pre><code># Deploy new model version with 10% traffic
+endpoint.deploy(
+    model=new_model,
+    traffic_percentage=10  # 10% to new, 90% to old
+)
+
+# Gradually increase if metrics look good
+endpoint.update(
+    traffic_split={
+        "old-model": 50,
+        "new-model": 50
+    }
+)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="strategy-card">
+                            <h5>Shadow Deployment</h5>
+                            <p><strong>How:</strong> Send traffic to both old and new models, but only return old model's predictions</p>
+                            <p><strong>Pros:</strong> Test new model without affecting users</p>
+                            <p><strong>Cons:</strong> Requires custom implementation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>6.2 Practice Questions</h3>
+                
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 1:</h4>
+                        <p>You're deploying a new model version. You want to minimize risk but can't afford double resources. What deployment strategy should you use?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Canary Deployment</h5>
+                        <p><strong>Reasoning:</strong></p>
+                        <ul>
+                            <li>Gradually shift traffic (5% → 25% → 50% → 100%)</li>
+                            <li>Monitor metrics at each stage</li>
+                            <li>Rollback if issues detected</li>
+                            <li>Doesn't require double resources (unlike blue-green)</li>
+                        </ul>
+                        <p><strong>Implementation:</strong> Use Vertex AI traffic splitting feature</p>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 2:</h4>
+                        <p>Your model needs to handle 100 requests/second during peak hours but only 10 requests/second normally. How do you optimize costs?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Use Autoscaling</h5>
+                        <p><strong>Configuration:</strong></p>
+                        <pre><code>endpoint.deploy(
+    model=model,
+    min_replica_count=1,  # Low cost during off-peak
+    max_replica_count=10,  # Scale up during peak
+    machine_type="n1-standard-4"
+)</code></pre>
+                        <p><strong>Benefits:</strong> Pay only for what you use, automatic scaling</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="domain7" class="content-section">
             <h2>📈 Domain 7: ML Solution Monitoring (10%)</h2>
-            <p class="coming-soon">Content being developed... This section will cover model monitoring, drift detection, and retraining.</p>
+            
+            <div class="topic">
+                <h3>7.1 Model Monitoring</h3>
+                
+                <div class="concept">
+                    <h4>What to Monitor</h4>
+                    
+                    <div class="monitoring-categories">
+                        <div class="category-card">
+                            <h5>1. Model Performance</h5>
+                            <ul>
+                                <li><strong>Prediction accuracy:</strong> Track accuracy, precision, recall over time</li>
+                                <li><strong>Latency:</strong> Response time for predictions</li>
+                                <li><strong>Throughput:</strong> Requests per second</li>
+                                <li><strong>Error rate:</strong> Failed predictions</li>
+                            </ul>
+                        </div>
+
+                        <div class="category-card">
+                            <h5>2. Data Quality</h5>
+                            <ul>
+                                <li><strong>Missing values:</strong> Increase in null features</li>
+                                <li><strong>Out-of-range values:</strong> Features outside expected bounds</li>
+                                <li><strong>Data type changes:</strong> Schema violations</li>
+                                <li><strong>Duplicate records:</strong> Data quality issues</li>
+                            </ul>
+                        </div>
+
+                        <div class="category-card">
+                            <h5>3. Data Drift</h5>
+                            <ul>
+                                <li><strong>Feature drift:</strong> Input feature distributions change</li>
+                                <li><strong>Prediction drift:</strong> Output distribution changes</li>
+                                <li><strong>Concept drift:</strong> Relationship between features and target changes</li>
+                            </ul>
+                        </div>
+
+                        <div class="category-card">
+                            <h5>4. Infrastructure</h5>
+                            <ul>
+                                <li><strong>CPU/Memory usage:</strong> Resource utilization</li>
+                                <li><strong>Replica count:</strong> Autoscaling behavior</li>
+                                <li><strong>Cost:</strong> Serving costs over time</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Vertex AI Model Monitoring</h4>
+                    
+                    <div class="code-example">
+                        <h5>Enable Monitoring</h5>
+                        <pre><code>from google.cloud import aiplatform
+
+# Create monitoring job
+monitoring_job = aiplatform.ModelDeploymentMonitoringJob.create(
+    display_name="model-monitoring",
+    endpoint=endpoint,
+    logging_sampling_strategy=aiplatform.model_monitoring.RandomSampleConfig(
+        sample_rate=0.5  # Sample 50% of predictions
+    ),
+    model_monitoring_alert_config=aiplatform.model_monitoring.EmailAlertConfig(
+        user_emails=["team@example.com"]
+    ),
+    predict_instance_schema_uri="gs://my-bucket/schema.yaml",
+    analysis_instance_schema_uri="gs://my-bucket/schema.yaml",
+    objective_configs=[
+        aiplatform.model_monitoring.ObjectiveConfig(
+            training_dataset=aiplatform.model_monitoring.TrainingDataset(
+                data_format="csv",
+                gcs_source="gs://my-bucket/training-data.csv"
+            ),
+            training_prediction_skew_detection_config=aiplatform.model_monitoring.SkewDetectionConfig(
+                skew_thresholds={"feature1": 0.3, "feature2": 0.3}
+            ),
+            prediction_drift_detection_config=aiplatform.model_monitoring.DriftDetectionConfig(
+                drift_thresholds={"feature1": 0.3, "feature2": 0.3}
+            )
+        )
+    ]
+)</code></pre>
+                    </div>
+
+                    <div class="monitoring-features">
+                        <h5>Features:</h5>
+                        <ul>
+                            <li><strong>Skew detection:</strong> Compare serving data to training data</li>
+                            <li><strong>Drift detection:</strong> Detect changes in serving data over time</li>
+                            <li><strong>Automatic alerts:</strong> Email notifications when thresholds exceeded</li>
+                            <li><strong>Dashboards:</strong> Visualize metrics and distributions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Retraining Strategies</h4>
+                    
+                    <div class="retraining-triggers">
+                        <h5>When to Retrain:</h5>
+                        <div class="trigger-card">
+                            <h6>1. Scheduled Retraining</h6>
+                            <p><strong>Trigger:</strong> Time-based (daily, weekly, monthly)</p>
+                            <p><strong>Use when:</strong> Data changes predictably over time</p>
+                            <p><strong>Example:</strong> Retrain recommendation model weekly with new user interactions</p>
+                        </div>
+
+                        <div class="trigger-card">
+                            <h6>2. Performance-Based Retraining</h6>
+                            <p><strong>Trigger:</strong> Model performance drops below threshold</p>
+                            <p><strong>Use when:</strong> Performance degradation indicates model staleness</p>
+                            <p><strong>Example:</strong> Retrain when accuracy drops below 90%</p>
+                        </div>
+
+                        <div class="trigger-card">
+                            <h6>3. Drift-Based Retraining</h6>
+                            <p><strong>Trigger:</strong> Data drift detected</p>
+                            <p><strong>Use when:</strong> Input data distribution changes significantly</p>
+                            <p><strong>Example:</strong> Retrain when feature drift exceeds 30%</p>
+                        </div>
+
+                        <div class="trigger-card">
+                            <h6>4. Data Volume-Based Retraining</h6>
+                            <p><strong>Trigger:</strong> Accumulated enough new data</p>
+                            <p><strong>Use when:</strong> Want to incorporate new patterns</p>
+                            <p><strong>Example:</strong> Retrain after collecting 10,000 new labeled examples</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>7.2 Practice Questions</h3>
+                
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 1:</h4>
+                        <p>Your fraud detection model's precision has dropped from 95% to 85% over the past month. What should you investigate first?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Check for data drift and concept drift</h5>
+                        <p><strong>Investigation steps:</strong></p>
+                        <ol>
+                            <li><strong>Data drift:</strong> Compare current input features to training data distribution</li>
+                            <li><strong>Concept drift:</strong> Check if fraud patterns have changed (new fraud techniques)</li>
+                            <li><strong>Data quality:</strong> Look for missing values, schema changes</li>
+                            <li><strong>Label quality:</strong> Verify ground truth labels are still accurate</li>
+                        </ol>
+                        <p><strong>Solution:</strong> If drift detected, retrain model with recent data</p>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 2:</h4>
+                        <p>You want to automatically retrain your model when performance degrades. How do you implement this?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Set up automated monitoring and retraining pipeline</h5>
+                        <p><strong>Implementation:</strong></p>
+                        <ol>
+                            <li><strong>Enable Vertex AI Model Monitoring</strong> with performance thresholds</li>
+                            <li><strong>Set up Cloud Function</strong> triggered by monitoring alerts</li>
+                            <li><strong>Cloud Function triggers Vertex AI Pipeline</strong> for retraining</li>
+                            <li><strong>Pipeline:</strong> Fetch new data → Train model → Evaluate → Deploy if better</li>
+                            <li><strong>Notifications:</strong> Alert team of retraining and deployment</li>
+                        </ol>
+                        <p><strong>Alternative:</strong> Use Cloud Scheduler for periodic retraining</p>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 3:</h4>
+                        <p>Your model serves 1 million predictions per day. Logging all predictions for monitoring is expensive. What should you do?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Use sampling for monitoring</h5>
+                        <p><strong>Implementation:</strong></p>
+                        <pre><code>monitoring_job = aiplatform.ModelDeploymentMonitoringJob.create(
+    logging_sampling_strategy=aiplatform.model_monitoring.RandomSampleConfig(
+        sample_rate=0.1  # Log only 10% of predictions
+    )
+)</code></pre>
+                        <p><strong>Reasoning:</strong></p>
+                        <ul>
+                            <li>10% sample (100K predictions) is statistically significant</li>
+                            <li>Reduces logging costs by 90%</li>
+                            <li>Still detects drift and performance issues</li>
+                        </ul>
+                        <p><strong>Adjust sample rate</strong> based on traffic volume and budget</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="resources" class="content-section">
