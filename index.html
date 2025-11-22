@@ -1321,7 +1321,640 @@ AS SELECT * FROM `dataset.customer_features`;</code></pre>
 
         <section id="domain3" class="content-section">
             <h2>📊 Domain 3: Data Preparation & Processing (15%)</h2>
-            <p class="coming-soon">Content being developed... This section will cover data ingestion, preprocessing, and feature engineering.</p>
+            
+            <div class="topic">
+                <h3>3.1 Data Ingestion Strategies</h3>
+                
+                <div class="concept">
+                    <h4>Batch Data Ingestion</h4>
+                    <p><strong>When to use:</strong> Historical data, periodic updates, large volumes</p>
+                    
+                    <div class="ingestion-methods">
+                        <div class="method-card">
+                            <h5>Cloud Storage Transfer</h5>
+                            <ul>
+                                <li>Transfer from on-premises or other clouds</li>
+                                <li>Scheduled or one-time transfers</li>
+                                <li>Good for large datasets (TBs to PBs)</li>
+                            </ul>
+                            <div class="code-example">
+                                <pre><code># Using gsutil for batch upload
+gsutil -m cp -r /local/data gs://my-bucket/training-data/
+
+# Using Storage Transfer Service (via console or API)
+# - Schedule daily transfers from S3 to GCS
+# - Automatic retry and validation</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>BigQuery Data Transfer Service</h5>
+                            <ul>
+                                <li>Automated data loads from SaaS applications</li>
+                                <li>Supports: Google Ads, YouTube, S3, Teradata, etc.</li>
+                                <li>Scheduled transfers with backfill support</li>
+                            </ul>
+                            <div class="code-example">
+                                <pre><code># Load CSV from Cloud Storage to BigQuery
+bq load \
+  --source_format=CSV \
+  --skip_leading_rows=1 \
+  --autodetect \
+  my_dataset.my_table \
+  gs://my-bucket/data/*.csv</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Streaming Data Ingestion</h4>
+                    <p><strong>When to use:</strong> Real-time data, continuous updates, event-driven systems</p>
+                    
+                    <div class="streaming-architecture">
+                        <h5>Pub/Sub → Dataflow → BigQuery Pattern</h5>
+                        <ol>
+                            <li><strong>Pub/Sub:</strong> Ingest streaming events</li>
+                            <li><strong>Dataflow:</strong> Transform and enrich data in real-time</li>
+                            <li><strong>BigQuery:</strong> Store for analytics and ML</li>
+                        </ol>
+                    </div>
+
+                    <div class="code-example">
+                        <h5>Example: Streaming to BigQuery</h5>
+                        <pre><code>from google.cloud import bigquery
+
+# Initialize BigQuery client
+client = bigquery.Client()
+
+# Stream data to BigQuery
+table_id = "my_project.my_dataset.my_table"
+rows_to_insert = [
+    {"user_id": "123", "event": "click", "timestamp": "2024-01-01T10:00:00"},
+    {"user_id": "456", "event": "purchase", "timestamp": "2024-01-01T10:05:00"}
+]
+
+errors = client.insert_rows_json(table_id, rows_to_insert)
+if errors:
+    print(f"Errors: {errors}")
+else:
+    print("Data streamed successfully")</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>3.2 Data Preprocessing</h3>
+                
+                <div class="concept">
+                    <h4>Handling Missing Values</h4>
+                    
+                    <div class="preprocessing-strategies">
+                        <div class="strategy-card">
+                            <h5>1. Remove Missing Data</h5>
+                            <p><strong>When:</strong> Small percentage of missing values (< 5%)</p>
+                            <div class="code-example">
+                                <pre><code>import pandas as pd
+
+# Remove rows with any missing values
+df_clean = df.dropna()
+
+# Remove rows where specific column is missing
+df_clean = df.dropna(subset=['important_column'])</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="strategy-card">
+                            <h5>2. Imputation</h5>
+                            <p><strong>When:</strong> Moderate missing values, want to preserve data</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.impute import SimpleImputer
+
+# Mean imputation for numerical features
+imputer = SimpleImputer(strategy='mean')
+df['age'] = imputer.fit_transform(df[['age']])
+
+# Mode imputation for categorical features
+imputer = SimpleImputer(strategy='most_frequent')
+df['category'] = imputer.fit_transform(df[['category']])
+
+# Median imputation (robust to outliers)
+imputer = SimpleImputer(strategy='median')
+df['income'] = imputer.fit_transform(df[['income']])</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="strategy-card">
+                            <h5>3. Advanced Imputation</h5>
+                            <p><strong>When:</strong> Complex patterns, multiple correlated features</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+
+# Iterative imputation (models each feature with missing values)
+imputer = IterativeImputer(random_state=0)
+df_imputed = imputer.fit_transform(df)</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Handling Outliers</h4>
+                    
+                    <div class="outlier-methods">
+                        <div class="method-card">
+                            <h5>1. Statistical Methods</h5>
+                            <div class="code-example">
+                                <pre><code>import numpy as np
+
+# Z-score method (remove values > 3 standard deviations)
+z_scores = np.abs((df['value'] - df['value'].mean()) / df['value'].std())
+df_no_outliers = df[z_scores < 3]
+
+# IQR method (Interquartile Range)
+Q1 = df['value'].quantile(0.25)
+Q3 = df['value'].quantile(0.75)
+IQR = Q3 - Q1
+df_no_outliers = df[(df['value'] >= Q1 - 1.5*IQR) & 
+                     (df['value'] <= Q3 + 1.5*IQR)]</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>2. Capping/Winsorizing</h5>
+                            <p><strong>Better than removal:</strong> Preserves data points</p>
+                            <div class="code-example">
+                                <pre><code># Cap at 1st and 99th percentiles
+lower = df['value'].quantile(0.01)
+upper = df['value'].quantile(0.99)
+df['value_capped'] = df['value'].clip(lower, upper)</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Data Normalization and Scaling</h4>
+                    
+                    <div class="scaling-methods">
+                        <div class="method-card">
+                            <h5>StandardScaler (Z-score normalization)</h5>
+                            <p><strong>Formula:</strong> (x - mean) / std</p>
+                            <p><strong>Result:</strong> Mean = 0, Std = 1</p>
+                            <p><strong>Use when:</strong> Features have different scales, using algorithms sensitive to scale (SVM, neural networks)</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)  # Use same scaler!</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>MinMaxScaler</h5>
+                            <p><strong>Formula:</strong> (x - min) / (max - min)</p>
+                            <p><strong>Result:</strong> Values between 0 and 1</p>
+                            <p><strong>Use when:</strong> Need bounded values, neural networks with sigmoid/tanh</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()
+X_scaled = scaler.fit_transform(X_train)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>RobustScaler</h5>
+                            <p><strong>Formula:</strong> Uses median and IQR instead of mean and std</p>
+                            <p><strong>Use when:</strong> Data has outliers (more robust)</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.preprocessing import RobustScaler
+
+scaler = RobustScaler()
+X_scaled = scaler.fit_transform(X_train)</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="important-note">
+                        <h5>⚠️ Critical: Fit on Training Data Only!</h5>
+                        <p>Always fit scalers on training data, then transform both train and test:</p>
+                        <pre><code># ✅ CORRECT
+scaler.fit(X_train)
+X_train_scaled = scaler.transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# ❌ WRONG - causes data leakage!
+scaler.fit(X)  # Don't fit on all data
+X_scaled = scaler.transform(X)</code></pre>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Encoding Categorical Variables</h4>
+                    
+                    <div class="encoding-methods">
+                        <div class="method-card">
+                            <h5>One-Hot Encoding</h5>
+                            <p><strong>Use for:</strong> Nominal categories (no order), few categories (< 10-15)</p>
+                            <div class="code-example">
+                                <pre><code>import pandas as pd
+from sklearn.preprocessing import OneHotEncoder
+
+# Pandas method
+df_encoded = pd.get_dummies(df, columns=['color', 'size'])
+
+# Scikit-learn method
+encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')
+encoded = encoder.fit_transform(df[['color']])</code></pre>
+                            </div>
+                            <p><strong>Result:</strong> color='red' → [1, 0, 0], color='blue' → [0, 1, 0]</p>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>Label Encoding</h5>
+                            <p><strong>Use for:</strong> Ordinal categories (has order), tree-based models</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.preprocessing import LabelEncoder
+
+# For ordinal data with order
+encoder = LabelEncoder()
+df['size_encoded'] = encoder.fit_transform(df['size'])
+# 'small' → 0, 'medium' → 1, 'large' → 2</code></pre>
+                            </div>
+                            <p><strong>⚠️ Warning:</strong> Don't use for nominal data with linear models (implies order)</p>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>Target Encoding</h5>
+                            <p><strong>Use for:</strong> High cardinality categories (many unique values)</p>
+                            <div class="code-example">
+                                <pre><code># Replace category with mean of target variable
+category_means = df.groupby('city')['target'].mean()
+df['city_encoded'] = df['city'].map(category_means)</code></pre>
+                            </div>
+                            <p><strong>⚠️ Warning:</strong> Can cause overfitting - use cross-validation encoding</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>3.3 Feature Engineering</h3>
+                
+                <div class="concept">
+                    <h4>Creating New Features</h4>
+                    
+                    <div class="feature-types">
+                        <div class="feature-card">
+                            <h5>1. Interaction Features</h5>
+                            <p>Combine multiple features to capture relationships</p>
+                            <div class="code-example">
+                                <pre><code># Multiply features
+df['price_per_sqft'] = df['price'] / df['square_feet']
+
+# Polynomial features
+from sklearn.preprocessing import PolynomialFeatures
+poly = PolynomialFeatures(degree=2, include_bias=False)
+X_poly = poly.fit_transform(X)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="feature-card">
+                            <h5>2. Date/Time Features</h5>
+                            <p>Extract temporal patterns</p>
+                            <div class="code-example">
+                                <pre><code>df['date'] = pd.to_datetime(df['date'])
+df['year'] = df['date'].dt.year
+df['month'] = df['date'].dt.month
+df['day_of_week'] = df['date'].dt.dayofweek
+df['is_weekend'] = df['day_of_week'].isin([5, 6]).astype(int)
+df['quarter'] = df['date'].dt.quarter
+df['days_since_start'] = (df['date'] - df['date'].min()).dt.days</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="feature-card">
+                            <h5>3. Text Features</h5>
+                            <p>Extract information from text</p>
+                            <div class="code-example">
+                                <pre><code># Basic text features
+df['text_length'] = df['text'].str.len()
+df['word_count'] = df['text'].str.split().str.len()
+df['avg_word_length'] = df['text_length'] / df['word_count']
+
+# TF-IDF for text classification
+from sklearn.feature_extraction.text import TfidfVectorizer
+vectorizer = TfidfVectorizer(max_features=1000)
+X_tfidf = vectorizer.fit_transform(df['text'])</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="feature-card">
+                            <h5>4. Aggregation Features</h5>
+                            <p>Group-level statistics</p>
+                            <div class="code-example">
+                                <pre><code># Customer-level aggregations
+customer_stats = df.groupby('customer_id').agg({
+    'purchase_amount': ['mean', 'sum', 'count', 'std'],
+    'days_since_purchase': 'min'
+}).reset_index()
+
+# Join back to original data
+df = df.merge(customer_stats, on='customer_id')</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Feature Selection</h4>
+                    <p><strong>Why:</strong> Remove irrelevant features, reduce overfitting, improve training speed</p>
+                    
+                    <div class="selection-methods">
+                        <div class="method-card">
+                            <h5>1. Correlation-Based Selection</h5>
+                            <div class="code-example">
+                                <pre><code># Remove highly correlated features
+correlation_matrix = df.corr().abs()
+upper_triangle = correlation_matrix.where(
+    np.triu(np.ones(correlation_matrix.shape), k=1).astype(bool)
+)
+to_drop = [col for col in upper_triangle.columns 
+           if any(upper_triangle[col] > 0.95)]
+df_reduced = df.drop(columns=to_drop)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>2. Feature Importance (Tree-based)</h5>
+                            <div class="code-example">
+                                <pre><code>from sklearn.ensemble import RandomForestClassifier
+
+# Train model and get feature importances
+rf = RandomForestClassifier()
+rf.fit(X_train, y_train)
+importances = pd.DataFrame({
+    'feature': X_train.columns,
+    'importance': rf.feature_importances_
+}).sort_values('importance', ascending=False)
+
+# Keep top N features
+top_features = importances.head(20)['feature'].tolist()
+X_selected = X[top_features]</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>3. Recursive Feature Elimination (RFE)</h5>
+                            <div class="code-example">
+                                <pre><code>from sklearn.feature_selection import RFE
+from sklearn.linear_model import LogisticRegression
+
+# Select top 10 features
+estimator = LogisticRegression()
+rfe = RFE(estimator, n_features_to_select=10)
+X_selected = rfe.fit_transform(X_train, y_train)
+selected_features = X_train.columns[rfe.support_]</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Vertex AI Feature Store</h4>
+                    <p><strong>What it is:</strong> Centralized repository for storing, serving, and managing ML features</p>
+                    
+                    <div class="feature-store-benefits">
+                        <h5>Benefits:</h5>
+                        <ul>
+                            <li><strong>Feature Reusability:</strong> Share features across teams and models</li>
+                            <li><strong>Consistency:</strong> Same features for training and serving (no training-serving skew)</li>
+                            <li><strong>Low Latency:</strong> Fast feature retrieval for online predictions</li>
+                            <li><strong>Point-in-Time Correctness:</strong> Avoid data leakage with historical features</li>
+                            <li><strong>Feature Monitoring:</strong> Track feature distributions and drift</li>
+                        </ul>
+                    </div>
+
+                    <div class="code-example">
+                        <h5>Example: Using Feature Store</h5>
+                        <pre><code>from google.cloud import aiplatform
+
+# Create feature store
+feature_store = aiplatform.Featurestore.create(
+    featurestore_id="my_feature_store",
+    online_serving_config={"fixed_node_count": 1}
+)
+
+# Create entity type (e.g., "user")
+entity_type = feature_store.create_entity_type(
+    entity_type_id="users",
+    description="User features"
+)
+
+# Create features
+entity_type.create_feature(
+    feature_id="age",
+    value_type="INT64"
+)
+
+# Ingest features
+entity_type.ingest_from_bq(
+    feature_ids=["age", "income", "city"],
+    bq_source_uri="bq://project.dataset.table"
+)
+
+# Read features for training
+features = entity_type.read(entity_ids=["user_123", "user_456"])</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>3.4 Data Validation and Splitting</h3>
+                
+                <div class="concept">
+                    <h4>Data Validation with TensorFlow Data Validation (TFDV)</h4>
+                    
+                    <div class="code-example">
+                        <pre><code>import tensorflow_data_validation as tfdv
+
+# Generate statistics
+train_stats = tfdv.generate_statistics_from_csv('train.csv')
+
+# Visualize statistics
+tfdv.visualize_statistics(train_stats)
+
+# Infer schema from training data
+schema = tfdv.infer_schema(train_stats)
+
+# Validate test data against schema
+test_stats = tfdv.generate_statistics_from_csv('test.csv')
+anomalies = tfdv.validate_statistics(test_stats, schema)
+
+# Display anomalies
+tfdv.display_anomalies(anomalies)</code></pre>
+                    </div>
+
+                    <div class="validation-checks">
+                        <h5>What TFDV Checks:</h5>
+                        <ul>
+                            <li>Missing values</li>
+                            <li>Data type mismatches</li>
+                            <li>Distribution shifts</li>
+                            <li>New categorical values</li>
+                            <li>Feature value ranges</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept">
+                    <h4>Data Splitting Strategies</h4>
+                    
+                    <div class="splitting-methods">
+                        <div class="method-card">
+                            <h5>1. Random Split</h5>
+                            <p><strong>Use when:</strong> Data is IID (independent and identically distributed)</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Three-way split
+X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3)
+X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>2. Stratified Split</h5>
+                            <p><strong>Use when:</strong> Imbalanced classes, want same class distribution in train/test</p>
+                            <div class="code-example">
+                                <pre><code>X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, stratify=y, random_state=42
+)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>3. Time-Based Split</h5>
+                            <p><strong>Use when:</strong> Time-series data, want to predict future</p>
+                            <div class="code-example">
+                                <pre><code># Sort by date first
+df = df.sort_values('date')
+
+# Split by date
+split_date = '2024-01-01'
+train = df[df['date'] < split_date]
+test = df[df['date'] >= split_date]
+
+# Or use TimeSeriesSplit for cross-validation
+from sklearn.model_selection import TimeSeriesSplit
+tscv = TimeSeriesSplit(n_splits=5)</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="method-card">
+                            <h5>4. Group-Based Split</h5>
+                            <p><strong>Use when:</strong> Data has groups (e.g., users, stores) that shouldn't be in both train and test</p>
+                            <div class="code-example">
+                                <pre><code>from sklearn.model_selection import GroupShuffleSplit
+
+splitter = GroupShuffleSplit(test_size=0.2, random_state=42)
+train_idx, test_idx = next(splitter.split(X, y, groups=df['user_id']))</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topic">
+                <h3>3.5 Practice Questions</h3>
+                
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 1:</h4>
+                        <p>You have a dataset with 20% missing values in the 'income' column. The data is not missing at random - higher income individuals are less likely to report. What's the best approach?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Use a separate "missing" indicator + imputation</h5>
+                        <p><strong>Reasoning:</strong></p>
+                        <ul>
+                            <li>Missing data is informative (not random) - missingness itself is a signal</li>
+                            <li>Create a binary feature: is_income_missing</li>
+                            <li>Then impute the missing values (median is robust)</li>
+                            <li>Model can learn from both the imputed value and the missingness pattern</li>
+                        </ul>
+                        <div class="code-example">
+                            <pre><code>df['is_income_missing'] = df['income'].isna().astype(int)
+df['income'].fillna(df['income'].median(), inplace=True)</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 2:</h4>
+                        <p>You're building a model to predict customer churn. You have customer IDs, which are unique identifiers. Should you include customer ID as a feature?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: No, remove customer ID</h5>
+                        <p><strong>Reasoning:</strong></p>
+                        <ul>
+                            <li>Customer ID is a unique identifier with no predictive power</li>
+                            <li>Including it can cause overfitting (model memorizes IDs)</li>
+                            <li>Won't generalize to new customers</li>
+                        </ul>
+                        <p><strong>Exception:</strong> If customer ID encodes information (e.g., ID format indicates signup channel), extract that information as a separate feature, then drop the ID</p>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 3:</h4>
+                        <p>You need to scale features for a neural network. Your data has outliers. Which scaler should you use?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: RobustScaler</h5>
+                        <p><strong>Reasoning:</strong></p>
+                        <ul>
+                            <li>RobustScaler uses median and IQR (not affected by outliers)</li>
+                            <li>StandardScaler uses mean and std (sensitive to outliers)</li>
+                            <li>MinMaxScaler is also sensitive to outliers (uses min/max)</li>
+                        </ul>
+                        <p><strong>Alternative:</strong> Remove/cap outliers first, then use StandardScaler or MinMaxScaler</p>
+                    </div>
+                </div>
+
+                <div class="practice-question">
+                    <div class="question">
+                        <h4>Question 4:</h4>
+                        <p>You're predicting stock prices using historical data. How should you split your data for training and testing?</p>
+                    </div>
+                    <div class="answer">
+                        <h5>Answer: Time-based split (chronological)</h5>
+                        <p><strong>Reasoning:</strong></p>
+                        <ul>
+                            <li>Time-series data has temporal dependencies</li>
+                            <li>Random split would leak future information into training</li>
+                            <li>Must train on past, test on future to simulate real-world scenario</li>
+                        </ul>
+                        <div class="code-example">
+                            <pre><code># Sort by date
+df = df.sort_values('date')
+
+# Split: train on 2020-2023, test on 2024
+train = df[df['date'] < '2024-01-01']
+test = df[df['date'] >= '2024-01-01']</code></pre>
+                        </div>
+                        <p><strong>⚠️ Never use random split for time-series data!</strong></p>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="domain4" class="content-section">
